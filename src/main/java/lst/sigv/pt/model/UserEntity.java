@@ -25,7 +25,7 @@ public class UserEntity {
     private int ivaoId;
     private int vatsimId;
     private Date birthDate;
-    private String userName;
+    private String username;
     private String password;
     @ManyToMany( cascade = CascadeType.MERGE)
     @JoinTable(name = "user_authority", joinColumns = {@JoinColumn ( name = "USER_ID", referencedColumnName = "ID")},
