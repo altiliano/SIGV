@@ -24,9 +24,7 @@ class UserControllerTest {
     @Autowired
     private WebApplicationContext webApplicationContext;
 
-
     private MockMvc mockMvc;
-
 
     @BeforeEach
     void setUp() {
@@ -79,5 +77,18 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.errors", is(notNullValue())))
                 .andExpect(jsonPath("$.errors.username", is(notNullValue())))
                 .andExpect(jsonPath("$.errors.username", is("Please provide valid username.")));
+    }
+
+    @Test
+    void authenticateUserBadCredential() throws Exception {
+        String authenticateUser = "{\n" +
+                "\n" +
+                "    \"username\": \"aa@gmail.com\",\n" +
+                "    \"password\": \"password\"\n" +
+                "}";
+        mockMvc.perform(post("/api/user/login")
+                .content(authenticateUser)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isForbidden());
     }
 }
