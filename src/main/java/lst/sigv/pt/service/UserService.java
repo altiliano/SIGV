@@ -7,4 +7,6 @@ import lst.sigv.pt.model.UserEntity;
  */
 public interface UserService {
     UserEntity findUserByUsername(String username);
+
+    UserEntity saveUser(UserEntity userEntity);
 }
