@@ -39,12 +39,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/api/user/login" ,"/api/user/register").permitAll()
+                .antMatchers("/api/user/login"
+                        ,"/api/user/register","/h2-console/**").permitAll()
                 .anyRequest().authenticated().and().
                 exceptionHandling().and().sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 
+        //this will allow frames with same origin which is much more safe
+        http.headers().frameOptions().sameOrigin();
 
     }
 
