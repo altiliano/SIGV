@@ -12,7 +12,7 @@ import java.util.Set;
  */
 @Getter
 @Setter
-@Entity
+@Entity(name = "users")
 public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,7 +28,11 @@ public class UserEntity {
     private String username;
     private String password;
     @ManyToMany( cascade = CascadeType.MERGE)
-    @JoinTable(name = "user_authority", joinColumns = {@JoinColumn ( name = "USER_ID", referencedColumnName = "ID")},
+    @JoinTable(name = "users_authority", joinColumns = {@JoinColumn ( name = "USER_ID", referencedColumnName = "ID")},
             inverseJoinColumns = {@JoinColumn(name = "AUTHORITY_ID", referencedColumnName = "ID")})
     private Set<Authority> authorities;
+    @OneToOne( cascade = CascadeType.ALL)
+    @JoinTable( name = "users_booking", joinColumns = {@JoinColumn (name = "USER_ID", referencedColumnName = "ID")},
+            inverseJoinColumns = {@JoinColumn(name = "BOOKING_ID", referencedColumnName = "ID")})
+    private BookingEntity booking;
 }
