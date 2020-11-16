@@ -36,12 +36,17 @@ public class SecurityTDD {
     }
 
 
-/*
+
     @Test
     public void testUnAuthorize() throws Exception {
-        mockMvc.perform(post("/api/user/register")
-                .contentType(MediaType.APPLICATION_JSON)
-                .param("fisrtName","teste"))
-                .andExpect(status().isOk());
-    }*/
+        String loginUserJson = "{\n" +
+                "\n" +
+                "    \"username\": \"aa@gmail.com\",\n" +
+                "    \"password\": \"password\"\n" +
+                "}";
+        mockMvc.perform(post("/api/user/login")
+                .content(loginUserJson)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnauthorized());
+    }
 }
