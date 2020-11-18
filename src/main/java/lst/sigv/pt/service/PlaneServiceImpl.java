@@ -23,23 +23,21 @@ public class PlaneServiceImpl implements PlaneService {
     }
 
     @Override
-    public RestPlane createPlane(RestPlane plane) {
-        PlaneEntity planeEntity = planeMapper.restPlaneToPlaneEntity(plane);
-        return planeMapper.planeEntityToRestPlane(planeRepository.save(planeEntity));
+    public PlaneEntity createPlane(PlaneEntity plane) {
+        return planeRepository.save(plane);
     }
 
     @Override
-    public RestPlane updatePlane(RestPlane plane) {
-        PlaneEntity planeEntity = planeMapper.restPlaneToPlaneEntity(plane);
-        return planeMapper.planeEntityToRestPlane(planeEntity);
+    public PlaneEntity updatePlane(PlaneEntity plane) {
+        return planeRepository.save(plane);
     }
 
     @Override
-    public RestPlane changePlaneStatus(PlaneStatus status, Long planeId) {
+    public PlaneEntity changePlaneStatus(PlaneStatus status, Long planeId) {
         Optional<PlaneEntity> planeEntity = planeRepository.findById(planeId);
         if (planeEntity.isPresent()) {
             planeEntity.get().setStatus(status);
-            return planeMapper.planeEntityToRestPlane(planeRepository.save(planeEntity.get()));
+            return planeRepository.save(planeEntity.get());
         }
         //TODO throw exception
         return null;

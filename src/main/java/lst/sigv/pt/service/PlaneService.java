@@ -1,5 +1,6 @@
 package lst.sigv.pt.service;
 
+import lst.sigv.pt.model.PlaneEntity;
 import lst.sigv.pt.model.PlaneStatus;
 import lst.sigv.pt.model.api.RestPlane;
 
@@ -8,11 +9,11 @@ import lst.sigv.pt.model.api.RestPlane;
  */
 public interface PlaneService {
 
-    RestPlane createPlane(RestPlane plane);
+    PlaneEntity createPlane(PlaneEntity plane);
 
-    RestPlane updatePlane(RestPlane plane);
+    PlaneEntity updatePlane(PlaneEntity plane);
 
-    RestPlane changePlaneStatus(PlaneStatus status, Long planeId);
+    PlaneEntity changePlaneStatus(PlaneStatus status, Long planeId);
 
     boolean existsByRegistration(String registration);
 }
