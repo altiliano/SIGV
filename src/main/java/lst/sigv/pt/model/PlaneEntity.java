@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -23,7 +24,7 @@ public class PlaneEntity {
     private PlaneStatus status;
     private String aircraftType;
     @OneToMany(mappedBy = "plane")
-    private Set<BookingEntity> bookings;
+    private Set<BookingEntity> bookings = new HashSet<>();
     @ManyToMany(mappedBy = "planes")
-    private Set<RouteEntity> routes;
+    private Set<RouteEntity> routes = new HashSet<>();
 }
