@@ -1,6 +1,9 @@
 package lst.sigv.pt.controller;
 
 import lombok.extern.slf4j.Slf4j;
+import lst.sigv.pt.exception.InvalidPlaneStatusException;
+import lst.sigv.pt.exception.PlaneAlreadyExistException;
+import lst.sigv.pt.exception.PlaneNotFoundException;
 import lst.sigv.pt.model.PlaneEntity;
 import lst.sigv.pt.model.PlaneStatus;
 import lst.sigv.pt.model.api.RestPlane;
@@ -32,8 +35,7 @@ public class PlaneController {
     @ResponseBody
     public RestPlane createPlane(@Validated @RequestBody RestPlaneForm form) {
         if (planeService.existsByRegistration(form.getRegistration())) {
-            //TODO add validation error. Registration need be unique!
-            return null;
+            throw  new PlaneAlreadyExistException("Plane with registration: "+ form.getRegistration()+ " already exist");
         }
         PlaneEntity plane = planeMapper.restPlaneFormToPlaneEntity(form);
         plane.setStatus(PlaneStatus.INACTIVE);
@@ -50,9 +52,10 @@ public class PlaneController {
     @RequestMapping("/active")
     @ResponseBody
     public RestPlane activePlane(@RequestBody String planeId) {
-        PlaneEntity plane = planeService.findPlaneById(Long.valueOf(planeId));
+        PlaneEntity plane = getPlaneById(planeId);
+
         if (!isValidaPlaneStatus(PlaneStatus.ACTIVE, plane.getStatus())) {
-            //TODO add validation error. Invalided plane status.
+           throw new InvalidPlaneStatusException("Invalid plane status");
         }
         plane.setStatus(PlaneStatus.ACTIVE);
         return planeMapper.planeEntityToRestPlane(planeService.updatePlane(plane));
@@ -62,10 +65,12 @@ public class PlaneController {
     @ResponseBody
     public RestPlane inactivePlane(@RequestBody String planeId) {
         PlaneEntity plane = planeService.findPlaneById(Long.valueOf(planeId));
-        if (!isValidaPlaneStatus(PlaneStatus.INACTIVE, plane.getStatus())) {
-            //TODO add validation error. Invalided plane status.
+        if (plane == null){
+            throw  new PlaneNotFoundException("plane with id: "+ planeId +"not found");
         }
-
+        if (!isValidaPlaneStatus(PlaneStatus.INACTIVE, plane.getStatus())) {
+            throw new InvalidPlaneStatusException("Invalid plane status");
+        }
         plane.setStatus(PlaneStatus.INACTIVE);
         return planeMapper.planeEntityToRestPlane(planeService.updatePlane(plane));
     }
@@ -73,9 +78,9 @@ public class PlaneController {
     @RequestMapping("/delete")
     @ResponseBody
     public RestPlane deletePlane(@RequestBody String planeId) {
-        PlaneEntity plane = planeService.findPlaneById(Long.valueOf(planeId));
+        PlaneEntity plane = getPlaneById(planeId);
         if (!isValidaPlaneStatus(PlaneStatus.DELETE, plane.getStatus())) {
-            //TODO add validation error. Invalided plane status.
+            throw new InvalidPlaneStatusException("Invalid plane status");
         }
 
         plane.setStatus(PlaneStatus.DELETE);
@@ -89,6 +94,14 @@ public class PlaneController {
             return false;
         }
         return true;
+    }
+
+    private PlaneEntity getPlaneById(String planeId){
+        PlaneEntity plane = planeService.findPlaneById(Long.valueOf(planeId));
+        if (plane == null){
+            throw  new PlaneNotFoundException("plane with id: "+ planeId +"not found");
+        }
+        return plane;
     }
 
 }

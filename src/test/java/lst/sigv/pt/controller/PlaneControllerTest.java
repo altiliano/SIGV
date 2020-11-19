@@ -1,5 +1,8 @@
 package lst.sigv.pt.controller;
 
+import lst.sigv.pt.exception.InvalidPlaneStatusException;
+import lst.sigv.pt.exception.PlaneAlreadyExistException;
+import lst.sigv.pt.exception.PlaneNotFoundException;
 import lst.sigv.pt.model.PlaneEntity;
 import lst.sigv.pt.model.PlaneStatus;
 import lst.sigv.pt.model.api.RestPlane;
@@ -17,6 +20,9 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -77,6 +83,18 @@ class PlaneControllerTest {
                 .andExpect(jsonPath("$.routes", hasSize(0)));
     }
 
+    @Test
+    void createPlaneWithSameRegistration() throws Exception {
+
+        when(planeService.existsByRegistration("CS-TST")).thenReturn(true);
+        mockMvc.perform(post("/api/plane/create")
+                .content(planeFormInJson)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(mvcResult -> assertTrue(mvcResult.getResolvedException() instanceof PlaneAlreadyExistException))
+                .andExpect(mvcResult -> assertEquals("Plane with registration: "+ "CS-TST"+ " already exist",mvcResult.getResolvedException().getMessage()));
+    }
+
 
     @Test
     void updatePlane() throws Exception {
@@ -103,6 +121,7 @@ class PlaneControllerTest {
 
     }
 
+
     @Test
     void activePlane() throws Exception {
         PlaneEntity planeEntity = getPlaneEntity();
@@ -125,6 +144,33 @@ class PlaneControllerTest {
                 .andExpect(jsonPath("$.registration", is(restPlane.getRegistration())))
                 .andExpect(jsonPath("$.bookings", hasSize(0)))
                 .andExpect(jsonPath("$.routes", hasSize(0)));
+    }
+
+    @Test
+    void activePlaneWithInvalidStatus() throws Exception {
+        PlaneEntity planeEntity = getPlaneEntity();
+        planeEntity.setStatus(PlaneStatus.ACTIVE);
+        when(planeService.findPlaneById(Long.valueOf("1"))).thenReturn(planeEntity);
+
+        mockMvc.perform(post("/api/plane/active")
+                .content("1")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(mvcResult -> assertTrue(mvcResult.getResolvedException() instanceof InvalidPlaneStatusException))
+                .andExpect(mvcResult -> assertEquals("Invalid plane status", mvcResult.getResolvedException().getMessage()));
+    }
+
+    @Test
+    void inactivePlaneNotFound() throws Exception {
+        when(planeService.findPlaneById(Long.valueOf("1"))).thenReturn(null);
+        mockMvc.perform(post("/api/plane/active")
+                .content("1")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(mvcResult -> assertTrue(mvcResult.getResolvedException() instanceof PlaneNotFoundException))
+                .andExpect(mvcResult -> assertEquals("plane with id: "+ "1" +"not found", mvcResult.getResolvedException().getMessage()));
+
+
     }
 
     @Test
