@@ -2,6 +2,7 @@ package lst.sigv.pt.service.mapper;
 
 import lst.sigv.pt.model.PlaneEntity;
 import lst.sigv.pt.model.api.RestPlane;
+import lst.sigv.pt.model.api.RestPlaneForm;
 import org.mapstruct.Mapper;
 
 /**
@@ -11,4 +12,5 @@ import org.mapstruct.Mapper;
 public interface PlaneMapper {
     RestPlane planeEntityToRestPlane(PlaneEntity plane);
     PlaneEntity restPlaneToPlaneEntity(RestPlane plane);
+    PlaneEntity restPlaneFormToPlaneEntity(RestPlaneForm planeForm);
 }
