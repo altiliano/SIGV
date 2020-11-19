@@ -2,9 +2,7 @@ package lst.sigv.pt.service;
 
 import lst.sigv.pt.model.PlaneEntity;
 import lst.sigv.pt.model.PlaneStatus;
-import lst.sigv.pt.model.api.RestPlane;
 import lst.sigv.pt.repository.PlaneRepository;
-import lst.sigv.pt.service.mapper.PlaneMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -15,11 +13,9 @@ import java.util.Optional;
 @Service
 public class PlaneServiceImpl implements PlaneService {
     private final PlaneRepository planeRepository;
-    private final PlaneMapper planeMapper;
 
-    public PlaneServiceImpl(PlaneRepository planeRepository, PlaneMapper planeMapper) {
+    public PlaneServiceImpl(PlaneRepository planeRepository) {
         this.planeRepository = planeRepository;
-        this.planeMapper = planeMapper;
     }
 
     @Override
@@ -46,5 +42,10 @@ public class PlaneServiceImpl implements PlaneService {
     @Override
     public boolean existsByRegistration(String registration) {
         return planeRepository.existsByRegistration(registration);
+    }
+
+    @Override
+    public PlaneEntity findPlaneById(Long planeId) {
+        return planeRepository.findById(planeId).orElse(null);
     }
 }
