@@ -24,4 +24,6 @@ public class UserServiceImpl implements UserService {
     public UserEntity saveUser(UserEntity userEntity){
         return userRepository.save(userEntity);
     }
+
+
 }

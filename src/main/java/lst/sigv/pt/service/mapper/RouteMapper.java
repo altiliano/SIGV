@@ -2,6 +2,7 @@ package lst.sigv.pt.service.mapper;
 
 import lst.sigv.pt.model.RouteEntity;
 import lst.sigv.pt.model.api.RestRoute;
+import lst.sigv.pt.model.api.RestRouteForm;
 import org.mapstruct.Mapper;
 
 /**
@@ -11,4 +12,5 @@ import org.mapstruct.Mapper;
 public interface RouteMapper {
     RestRoute routeEntityToRestRoute(RouteEntity routeEntity);
     RouteEntity restRouteToRouteEntity(RestRoute route);
+    RestRoute restRouteFormToRestRoute(RestRouteForm form);
 }
