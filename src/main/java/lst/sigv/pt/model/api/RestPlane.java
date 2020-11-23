@@ -19,6 +19,4 @@ public class RestPlane implements Serializable {
     private String photoUrl;
     private String textureUrl;
     private PlaneStatus status;
-    private Set<RestBooking> bookings = new HashSet<>();
-    private Set<RestRoute> routes = new HashSet<>();
 }

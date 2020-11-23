@@ -6,6 +6,9 @@ import lst.sigv.pt.repository.RouteRepository;
 import lst.sigv.pt.service.mapper.RouteMapper;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by Afonseca on 18/11/20
  */
@@ -31,5 +34,30 @@ public class RouteServiceImpl implements RouteService {
 
     private RestRoute saveRoute(RouteEntity routeEntity) {
         return routeMapper.routeEntityToRestRoute(routeRepository.save(routeEntity));
+    }
+
+    @Override
+    public RestRoute activeRoute(String routeId) {
+        return null;
+    }
+
+    @Override
+    public RestRoute inactiveRoute(String routeId) {
+        return null;
+    }
+
+    @Override
+    public List<RestRoute> getAllAvailableRoute() {
+        List<RestRoute> routes = new ArrayList<>();
+        routeRepository.findAll().forEach(routeEntity -> routes.add(routeMapper.routeEntityToRestRoute(routeEntity)));
+        return routes;
+    }
+
+    private RestRoute getRouteById(String routeId) {
+        RouteEntity routeEntity = routeRepository.findById(Long.valueOf(routeId)).orElse(null);
+        if (routeEntity == null) {
+            return null;
+        }
+        return routeMapper.routeEntityToRestRoute(routeEntity);
     }
 }
