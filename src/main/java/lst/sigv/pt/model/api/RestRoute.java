@@ -1,6 +1,7 @@
 package lst.sigv.pt.model.api;
 
 import lombok.Data;
+import lst.sigv.pt.model.RouteStatus;
 
 import java.io.Serializable;
 import java.util.Set;
@@ -14,6 +15,7 @@ public class RestRoute implements Serializable {
     private long id;
     private String depart;
     private String destination;
+    private RouteStatus status;
     private Set<RestPlane> planes;
 
 }

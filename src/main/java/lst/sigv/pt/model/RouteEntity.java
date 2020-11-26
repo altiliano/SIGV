@@ -18,6 +18,7 @@ public class RouteEntity {
     private long id;
     private String depart;
     private String destination;
+    private RouteStatus status;
     @ManyToMany( cascade = CascadeType.MERGE)
     @JoinTable(name = "route_planes", joinColumns = {@JoinColumn(name = "route_id", referencedColumnName = "id")},
             inverseJoinColumns = {@JoinColumn(name = "plane_id", referencedColumnName = "id")})
