@@ -22,7 +22,6 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -78,9 +77,7 @@ class PlaneControllerTest {
                 .andExpect(jsonPath("$.photoUrl", is(restPlane.getPhotoUrl())))
                 .andExpect(jsonPath("$.textureUrl", is(restPlane.getTextureUrl())))
                 .andExpect(jsonPath("$.status", is(restPlane.getStatus())))
-                .andExpect(jsonPath("$.registration", is(restPlane.getRegistration())))
-                .andExpect(jsonPath("$.bookings", hasSize(0)))
-                .andExpect(jsonPath("$.routes", hasSize(0)));
+                .andExpect(jsonPath("$.registration", is(restPlane.getRegistration())));
     }
 
     @Test
@@ -115,22 +112,21 @@ class PlaneControllerTest {
                 .andExpect(jsonPath("$.photoUrl", is(restPlane.getPhotoUrl())))
                 .andExpect(jsonPath("$.textureUrl", is(restPlane.getTextureUrl())))
                 .andExpect(jsonPath("$.status", is(restPlane.getStatus())))
-                .andExpect(jsonPath("$.registration", is(restPlane.getRegistration())))
-                .andExpect(jsonPath("$.bookings", hasSize(0)))
-                .andExpect(jsonPath("$.routes", hasSize(0)));
+                .andExpect(jsonPath("$.registration", is(restPlane.getRegistration())));
 
     }
 
 
     @Test
     void activePlane() throws Exception {
-        PlaneEntity planeEntity = getPlaneEntity();
+        PlaneEntity inactivePlaneEntity = getPlaneEntity();
+        PlaneEntity activePlaneEntity = getPlaneEntity();
+        activePlaneEntity.setStatus(PlaneStatus.ACTIVE);
         RestPlane restPlane = getPlane();
         restPlane.setStatus(PlaneStatus.ACTIVE);
-        when(planeService.findPlaneById(Long.valueOf("1"))).thenReturn(planeEntity);
-        planeEntity.setStatus(PlaneStatus.ACTIVE);
-        when(planeService.updatePlane(planeEntity)).thenReturn(planeEntity);
-        when(planeMapper.planeEntityToRestPlane(planeEntity)).thenReturn(restPlane);
+        when(planeService.findPlaneById(Long.valueOf("1"))).thenReturn(inactivePlaneEntity);
+        when(planeService.updatePlane(inactivePlaneEntity)).thenReturn(activePlaneEntity);
+        when(planeMapper.planeEntityToRestPlane(activePlaneEntity)).thenReturn(restPlane);
         mockMvc.perform(post("/api/plane/active")
                 .content("1")
                 .contentType(MediaType.APPLICATION_JSON))
@@ -141,9 +137,7 @@ class PlaneControllerTest {
                 .andExpect(jsonPath("$.photoUrl", is(restPlane.getPhotoUrl())))
                 .andExpect(jsonPath("$.textureUrl", is(restPlane.getTextureUrl())))
                 .andExpect(jsonPath("$.status", is(restPlane.getStatus().toString())))
-                .andExpect(jsonPath("$.registration", is(restPlane.getRegistration())))
-                .andExpect(jsonPath("$.bookings", hasSize(0)))
-                .andExpect(jsonPath("$.routes", hasSize(0)));
+                .andExpect(jsonPath("$.registration", is(restPlane.getRegistration())));
     }
 
     @Test
@@ -176,13 +170,14 @@ class PlaneControllerTest {
     @Test
     void inactivePlane() throws Exception {
 
-        PlaneEntity planeEntity = getPlaneEntity();
+        PlaneEntity inactivePlaneEntity = getPlaneEntity();
+        PlaneEntity activePlaneEntity = getPlaneEntity();
+        activePlaneEntity.setStatus(PlaneStatus.ACTIVE);
         RestPlane restPlane = getPlane();
         restPlane.setStatus(PlaneStatus.INACTIVE);
-        when(planeService.findPlaneById(Long.valueOf("1"))).thenReturn(planeEntity);
-        planeEntity.setStatus(PlaneStatus.INACTIVE);
-        when(planeService.updatePlane(planeEntity)).thenReturn(planeEntity);
-        when(planeMapper.planeEntityToRestPlane(planeEntity)).thenReturn(restPlane);
+        when(planeService.findPlaneById(Long.valueOf("1"))).thenReturn(inactivePlaneEntity);
+        when(planeService.updatePlane(inactivePlaneEntity)).thenReturn(activePlaneEntity);
+        when(planeMapper.planeEntityToRestPlane(activePlaneEntity)).thenReturn(restPlane);
         mockMvc.perform(post("/api/plane/active")
                 .content("1")
                 .contentType(MediaType.APPLICATION_JSON))
@@ -193,20 +188,19 @@ class PlaneControllerTest {
                 .andExpect(jsonPath("$.photoUrl", is(restPlane.getPhotoUrl())))
                 .andExpect(jsonPath("$.textureUrl", is(restPlane.getTextureUrl())))
                 .andExpect(jsonPath("$.status", is(restPlane.getStatus().toString())))
-                .andExpect(jsonPath("$.registration", is(restPlane.getRegistration())))
-                .andExpect(jsonPath("$.bookings", hasSize(0)))
-                .andExpect(jsonPath("$.routes", hasSize(0)));
+                .andExpect(jsonPath("$.registration", is(restPlane.getRegistration())));
     }
 
     @Test
     void deletePlane() throws Exception {
         PlaneEntity planeEntity = getPlaneEntity();
+        PlaneEntity deletedPlane = getPlaneEntity();
+        deletedPlane.setStatus(PlaneStatus.DELETE);
         RestPlane restPlane = getPlane();
         restPlane.setStatus(PlaneStatus.DELETE);
         when(planeService.findPlaneById(Long.valueOf("1"))).thenReturn(planeEntity);
-        planeEntity.setStatus(PlaneStatus.DELETE);
-        when(planeService.updatePlane(planeEntity)).thenReturn(planeEntity);
-        when(planeMapper.planeEntityToRestPlane(planeEntity)).thenReturn(restPlane);
+        when(planeService.updatePlane(planeEntity)).thenReturn(deletedPlane);
+        when(planeMapper.planeEntityToRestPlane(deletedPlane)).thenReturn(restPlane);
         mockMvc.perform(post("/api/plane/active")
                 .content("1")
                 .contentType(MediaType.APPLICATION_JSON))
@@ -217,9 +211,7 @@ class PlaneControllerTest {
                 .andExpect(jsonPath("$.photoUrl", is(restPlane.getPhotoUrl())))
                 .andExpect(jsonPath("$.textureUrl", is(restPlane.getTextureUrl())))
                 .andExpect(jsonPath("$.status", is(restPlane.getStatus().toString())))
-                .andExpect(jsonPath("$.registration", is(restPlane.getRegistration())))
-                .andExpect(jsonPath("$.bookings", hasSize(0)))
-                .andExpect(jsonPath("$.routes", hasSize(0)));
+                .andExpect(jsonPath("$.registration", is(restPlane.getRegistration())));
     }
 
     private PlaneEntity getPlaneEntity() {
@@ -232,6 +224,7 @@ class PlaneControllerTest {
         plane.setTextureUrl("https://www.texasstandard.org/wp-content/uploads/2018/04/33491246922_bbabff8c4f_k.jpg");
         return plane;
     }
+
 
     private RestPlane getPlane() {
         RestPlane restPlane = new RestPlane();
