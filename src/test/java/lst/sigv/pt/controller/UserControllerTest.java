@@ -84,7 +84,7 @@ class UserControllerTest {
         String authenticateUser = "{\n" +
                 "\n" +
                 "    \"username\": \"aa@gmail.com\",\n" +
-                "    \"password\": \"password\"\n" +
+                "    \"password\": \"aaaaa\"\n" +
                 "}";
         mockMvc.perform(post("/api/user/login")
                 .content(authenticateUser)
