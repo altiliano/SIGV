@@ -54,7 +54,7 @@ public class PlaneController {
     public RestPlane activePlane(@RequestBody String planeId) {
         PlaneEntity plane = getPlaneById(planeId);
 
-        if (isValidaPlaneStatus(PlaneStatus.ACTIVE, plane.getStatus())) {
+        if (isNotValidPlaneStatus(PlaneStatus.ACTIVE, plane.getStatus())) {
            throw new InvalidPlaneStatusException("Invalid plane status");
         }
         plane.setStatus(PlaneStatus.ACTIVE);
@@ -68,7 +68,7 @@ public class PlaneController {
         if (plane == null){
             throw  new PlaneNotFoundException("plane with id: "+ planeId +"not found");
         }
-        if (isValidaPlaneStatus(PlaneStatus.INACTIVE, plane.getStatus())) {
+        if (isNotValidPlaneStatus(PlaneStatus.INACTIVE, plane.getStatus())) {
             throw new InvalidPlaneStatusException("Invalid plane status");
         }
         plane.setStatus(PlaneStatus.INACTIVE);
@@ -79,7 +79,7 @@ public class PlaneController {
     @ResponseBody
     public RestPlane deletePlane(@RequestBody String planeId) {
         PlaneEntity plane = getPlaneById(planeId);
-        if (isValidaPlaneStatus(PlaneStatus.DELETE, plane.getStatus())) {
+        if (isNotValidPlaneStatus(PlaneStatus.DELETE, plane.getStatus())) {
             throw new InvalidPlaneStatusException("Invalid plane status");
         }
 
@@ -87,7 +87,7 @@ public class PlaneController {
         return planeMapper.planeEntityToRestPlane(planeService.updatePlane(plane));
     }
 
-    private boolean isValidaPlaneStatus(PlaneStatus newStatus, PlaneStatus oldStatus) {
+    private boolean isNotValidPlaneStatus(PlaneStatus newStatus, PlaneStatus oldStatus) {
         if (newStatus.equals(oldStatus)) {
             return true;
         }
