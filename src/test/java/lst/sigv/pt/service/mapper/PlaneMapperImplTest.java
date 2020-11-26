@@ -30,8 +30,6 @@ class PlaneMapperImplTest {
         Assertions.assertEquals(planeEntity.getRegistration(), restPlane.getRegistration());
         Assertions.assertEquals(planeEntity.getStatus(), restPlane.getStatus());
         Assertions.assertEquals(planeEntity.getPhotoUrl(), restPlane.getPhotoUrl());
-        Assertions.assertEquals(planeEntity.getBookings().size(), restPlane.getBookings().size());
-        Assertions.assertEquals(planeEntity.getRoutes().size(), restPlane.getRoutes().size());
 
     }
 
@@ -71,8 +69,6 @@ class PlaneMapperImplTest {
         restPlane.setId(1L);
         restPlane.setName("Miguel Gomes");
         restPlane.setRegistration("CS-TST");
-        restPlane.setRoutes(getRestRoutes());
-        restPlane.setBookings(getRestBookings());
         restPlane.setStatus(PlaneStatus.ACTIVE);
         return restPlane;
     }

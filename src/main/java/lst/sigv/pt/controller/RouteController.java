@@ -8,6 +8,8 @@ import lst.sigv.pt.service.mapper.RouteMapper;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 /**
  * Created by Afonseca on 22/11/2020.
  **/
@@ -30,13 +32,31 @@ public class RouteController {
         return routeService.createRoute(restRoute);
     }
 
-    //TODO update route;
+    @PostMapping("update")
+    public RestRoute updateRoute(@RequestBody RestRoute route)  {
+       return routeService.updateRoute(route);
+    }
 
-    //TODO get all available route
+    @GetMapping("getAllActive")
+    public List<RestRoute> getAllActiveRoute()  {
+        return routeService.getAllActiveRoute();
+    }
 
-    //TODO delete route
+    @PostMapping("delete")
+    public void deleteRoute(@RequestBody String routeId)  {
+        routeService.deleteRoute(routeId);
+    }
 
-    //TODO active route
+    @PostMapping("active")
+    @ResponseBody
+    public RestRoute activeRoute(@RequestBody String routeId)  {
+        return routeService.activeRoute(routeId);
+    }
 
-    //TODO inactive route
+    @PostMapping("inactive")
+    @ResponseBody
+    public RestRoute inactiveRoute(@RequestBody  String routeId)  {
+        return routeService.inactiveRoute(routeId);
+    }
+
 }
