@@ -1,5 +1,6 @@
 package lst.sigv.pt.service;
 
+import lst.sigv.pt.exception.PlaneAlreadyExistException;
 import lst.sigv.pt.model.PlaneEntity;
 import lst.sigv.pt.model.PlaneStatus;
 
@@ -8,7 +9,7 @@ import lst.sigv.pt.model.PlaneStatus;
  */
 public interface PlaneService {
 
-    PlaneEntity createPlane(PlaneEntity plane);
+    PlaneEntity createPlane(PlaneEntity plane) throws PlaneAlreadyExistException;
 
     PlaneEntity updatePlane(PlaneEntity plane);
 

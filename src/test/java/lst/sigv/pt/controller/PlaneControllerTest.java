@@ -18,7 +18,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -41,7 +40,7 @@ class PlaneControllerTest {
 
     private MockMvc mockMvc;
 
-    private String planeFormInJson = "{\n" +
+    private final String planeFormInJson = "{\n" +
             "\n" +
             "    \"name\": \"Miguel Gomes\",\n" +
             "    \"registration\": \"CS-TST\",\n" +
@@ -82,14 +81,17 @@ class PlaneControllerTest {
 
     @Test
     void createPlaneWithSameRegistration() throws Exception {
-
-        when(planeService.existsByRegistration("CS-TST")).thenReturn(true);
+        PlaneEntity planeEntity = getPlaneEntity();
+        RestPlaneForm form = getPlaneForm();
+        when(planeService.createPlane(planeEntity)).thenThrow(new PlaneAlreadyExistException("Plane with registration: " + "CS-TST" + " already exist"));
+        when(planeService.existsByRegistration(planeEntity.getRegistration())).thenReturn(true);
+        when(planeMapper.restPlaneFormToPlaneEntity(form)).thenReturn(planeEntity);
         mockMvc.perform(post("/api/plane/create")
                 .content(planeFormInJson)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(mvcResult -> assertTrue(mvcResult.getResolvedException() instanceof PlaneAlreadyExistException))
-                .andExpect(mvcResult -> assertEquals("Plane with registration: "+ "CS-TST"+ " already exist",mvcResult.getResolvedException().getMessage()));
+                .andExpect(mvcResult -> assertEquals("Plane with registration: " + "CS-TST" + " already exist", mvcResult.getResolvedException().getMessage()));
     }
 
 
@@ -119,13 +121,11 @@ class PlaneControllerTest {
 
     @Test
     void activePlane() throws Exception {
-        PlaneEntity inactivePlaneEntity = getPlaneEntity();
         PlaneEntity activePlaneEntity = getPlaneEntity();
         activePlaneEntity.setStatus(PlaneStatus.ACTIVE);
         RestPlane restPlane = getPlane();
         restPlane.setStatus(PlaneStatus.ACTIVE);
-        when(planeService.findPlaneById(Long.valueOf("1"))).thenReturn(inactivePlaneEntity);
-        when(planeService.updatePlane(inactivePlaneEntity)).thenReturn(activePlaneEntity);
+        when(planeService.changePlaneStatus(PlaneStatus.ACTIVE,Long.valueOf("1"))).thenReturn(activePlaneEntity);
         when(planeMapper.planeEntityToRestPlane(activePlaneEntity)).thenReturn(restPlane);
         mockMvc.perform(post("/api/plane/active")
                 .content("1")
@@ -142,10 +142,7 @@ class PlaneControllerTest {
 
     @Test
     void activePlaneWithInvalidStatus() throws Exception {
-        PlaneEntity planeEntity = getPlaneEntity();
-        planeEntity.setStatus(PlaneStatus.ACTIVE);
-        when(planeService.findPlaneById(Long.valueOf("1"))).thenReturn(planeEntity);
-
+        when(planeService.changePlaneStatus(PlaneStatus.ACTIVE,Long.valueOf("1"))).thenThrow(new InvalidPlaneStatusException("Invalid plane status"));
         mockMvc.perform(post("/api/plane/active")
                 .content("1")
                 .contentType(MediaType.APPLICATION_JSON))
@@ -156,13 +153,13 @@ class PlaneControllerTest {
 
     @Test
     void inactivePlaneNotFound() throws Exception {
-        when(planeService.findPlaneById(Long.valueOf("1"))).thenReturn(null);
-        mockMvc.perform(post("/api/plane/active")
+        when(planeService.changePlaneStatus(PlaneStatus.INACTIVE,Long.valueOf("1"))).thenThrow(new PlaneNotFoundException("plane with id: " + "1" + " not found"));
+        mockMvc.perform(post("/api/plane/inactive")
                 .content("1")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(mvcResult -> assertTrue(mvcResult.getResolvedException() instanceof PlaneNotFoundException))
-                .andExpect(mvcResult -> assertEquals("plane with id: "+ "1" +"not found", mvcResult.getResolvedException().getMessage()));
+                .andExpect(mvcResult -> assertEquals("plane with id: " + "1" + " not found", mvcResult.getResolvedException().getMessage()));
 
 
     }
@@ -172,13 +169,12 @@ class PlaneControllerTest {
 
         PlaneEntity inactivePlaneEntity = getPlaneEntity();
         PlaneEntity activePlaneEntity = getPlaneEntity();
-        activePlaneEntity.setStatus(PlaneStatus.ACTIVE);
+        activePlaneEntity.setStatus(PlaneStatus.INACTIVE);
         RestPlane restPlane = getPlane();
         restPlane.setStatus(PlaneStatus.INACTIVE);
-        when(planeService.findPlaneById(Long.valueOf("1"))).thenReturn(inactivePlaneEntity);
-        when(planeService.updatePlane(inactivePlaneEntity)).thenReturn(activePlaneEntity);
-        when(planeMapper.planeEntityToRestPlane(activePlaneEntity)).thenReturn(restPlane);
-        mockMvc.perform(post("/api/plane/active")
+        when(planeService.changePlaneStatus(PlaneStatus.INACTIVE,Long.valueOf("1"))).thenReturn(inactivePlaneEntity);
+        when(planeMapper.planeEntityToRestPlane(inactivePlaneEntity)).thenReturn(restPlane);
+        mockMvc.perform(post("/api/plane/inactive")
                 .content("1")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -193,15 +189,13 @@ class PlaneControllerTest {
 
     @Test
     void deletePlane() throws Exception {
-        PlaneEntity planeEntity = getPlaneEntity();
         PlaneEntity deletedPlane = getPlaneEntity();
         deletedPlane.setStatus(PlaneStatus.DELETE);
         RestPlane restPlane = getPlane();
         restPlane.setStatus(PlaneStatus.DELETE);
-        when(planeService.findPlaneById(Long.valueOf("1"))).thenReturn(planeEntity);
-        when(planeService.updatePlane(planeEntity)).thenReturn(deletedPlane);
+        when(planeService.changePlaneStatus(PlaneStatus.DELETE,Long.valueOf("1"))).thenReturn(deletedPlane);
         when(planeMapper.planeEntityToRestPlane(deletedPlane)).thenReturn(restPlane);
-        mockMvc.perform(post("/api/plane/active")
+        mockMvc.perform(post("/api/plane/delete")
                 .content("1")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
