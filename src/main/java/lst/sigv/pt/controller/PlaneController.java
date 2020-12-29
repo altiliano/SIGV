@@ -34,11 +34,7 @@ public class PlaneController {
     @RequestMapping("/create")
     @ResponseBody
     public RestPlane createPlane(@Validated @RequestBody RestPlaneForm form) {
-        if (planeService.existsByRegistration(form.getRegistration())) {
-            throw  new PlaneAlreadyExistException("Plane with registration: "+ form.getRegistration()+ " already exist");
-        }
         PlaneEntity plane = planeMapper.restPlaneFormToPlaneEntity(form);
-        plane.setStatus(PlaneStatus.INACTIVE);
         return planeMapper.planeEntityToRestPlane(planeService.createPlane(plane));
     }
 
@@ -52,54 +48,20 @@ public class PlaneController {
     @RequestMapping("/active")
     @ResponseBody
     public RestPlane activePlane(@RequestBody String planeId) {
-        PlaneEntity plane = getPlaneById(planeId);
-
-        if (isNotValidPlaneStatus(PlaneStatus.ACTIVE, plane.getStatus())) {
-           throw new InvalidPlaneStatusException("Invalid plane status");
-        }
-        plane.setStatus(PlaneStatus.ACTIVE);
-        return planeMapper.planeEntityToRestPlane(planeService.updatePlane(plane));
+        return planeMapper.planeEntityToRestPlane(planeService.changePlaneStatus(PlaneStatus.ACTIVE, Long.valueOf(planeId)));
     }
 
     @RequestMapping("/inactive")
     @ResponseBody
     public RestPlane inactivePlane(@RequestBody String planeId) {
-        PlaneEntity plane = planeService.findPlaneById(Long.valueOf(planeId));
-        if (plane == null){
-            throw  new PlaneNotFoundException("plane with id: "+ planeId +"not found");
-        }
-        if (isNotValidPlaneStatus(PlaneStatus.INACTIVE, plane.getStatus())) {
-            throw new InvalidPlaneStatusException("Invalid plane status");
-        }
-        plane.setStatus(PlaneStatus.INACTIVE);
-        return planeMapper.planeEntityToRestPlane(planeService.updatePlane(plane));
+        return planeMapper.planeEntityToRestPlane(planeService.changePlaneStatus(PlaneStatus.INACTIVE, Long.valueOf(planeId)));
     }
 
     @RequestMapping("/delete")
     @ResponseBody
     public RestPlane deletePlane(@RequestBody String planeId) {
-        PlaneEntity plane = getPlaneById(planeId);
-        if (isNotValidPlaneStatus(PlaneStatus.DELETE, plane.getStatus())) {
-            throw new InvalidPlaneStatusException("Invalid plane status");
-        }
-
-        plane.setStatus(PlaneStatus.DELETE);
-        return planeMapper.planeEntityToRestPlane(planeService.updatePlane(plane));
+        return planeMapper.planeEntityToRestPlane(planeService.changePlaneStatus(PlaneStatus.DELETE, Long.valueOf(planeId)));
     }
 
-    private boolean isNotValidPlaneStatus(PlaneStatus newStatus, PlaneStatus oldStatus) {
-        if (newStatus.equals(oldStatus)) {
-            return true;
-        }
-        return oldStatus.equals(PlaneStatus.DELETE);
-    }
-
-    private PlaneEntity getPlaneById(String planeId){
-        PlaneEntity plane = planeService.findPlaneById(Long.valueOf(planeId));
-        if (plane == null){
-            throw  new PlaneNotFoundException("plane with id: "+ planeId +"not found");
-        }
-        return plane;
-    }
 
 }
