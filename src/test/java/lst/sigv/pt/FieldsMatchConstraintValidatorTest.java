@@ -32,12 +32,7 @@ public class FieldsMatchConstraintValidatorTest {
         userRegistration.setFirstName("test");
         userRegistration.setLastName("test");
         userRegistration.setBirthDate(new Date(1111111L));
-        userRegistration.setCity("Lisbon");
-        userRegistration.setCountry("Portugal");
         userRegistration.setEmail("aa@gmail.com");
-        userRegistration.setUsername("username");
-        userRegistration.setIvaoId(111111);
-        userRegistration.setVatsimId(111111);
         userRegistration.setPassword("password");
         userRegistration.setConfirmPassword("password");
 
@@ -52,12 +47,7 @@ public class FieldsMatchConstraintValidatorTest {
         userRegistration.setFirstName("test");
         userRegistration.setLastName("test");
         userRegistration.setBirthDate(new Date(1111111L));
-        userRegistration.setCity("Lisbon");
-        userRegistration.setCountry("Portugal");
         userRegistration.setEmail("aa@gmail.com");
-        userRegistration.setUsername("username");
-        userRegistration.setIvaoId(111111);
-        userRegistration.setVatsimId(111111);
         userRegistration.setPassword("password");
         userRegistration.setConfirmPassword("invalid");
         Set<ConstraintViolation<RestUserRegistration>> constraintViolations = validator.validate(userRegistration);
