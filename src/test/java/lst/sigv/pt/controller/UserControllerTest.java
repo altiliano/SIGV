@@ -40,10 +40,7 @@ class UserControllerTest {
                 "    \"firstName\":\"teste\",\n" +
                 "    \"lastName\": \"teste\",\n" +
                 "    \"email\": \"aa@gmail.com\",\n" +
-                "    \"country\":\"Portugal\",\n" +
-                "    \"city\": \"Lisbon\",\n" +
-                "    \"ivaoId\": \"123232323\",\n" +
-                "    \"vatsimId\": \"2312323\",\n" +
+                "    \"emailConfirmation\": \"aa@gmail.com\",\n" +
                 "    \"birthDate\": \"2018-10-22\",\n" +
                 "    \"confirmPassword\": \"password\",\n" +
                 "    \"username\": \"aa@gmail.com\",\n" +
@@ -60,11 +57,7 @@ class UserControllerTest {
         String registerUserInJson = "{\n" +
                 "    \"firstName\":\"teste\",\n" +
                 "    \"lastName\": \"teste\",\n" +
-                "    \"email\": \"aa@gmail.com\",\n" +
-                "    \"country\":\"Portugal\",\n" +
-                "    \"city\": \"Lisbon\",\n" +
-                "    \"ivaoId\": \"123232323\",\n" +
-                "    \"vatsimId\": \"2312323\",\n" +
+                "    \"emailConfirmation\": \"aa@gmail.com\",\n" +
                 "    \"birthDate\": \"2018-10-22\",\n" +
                 "    \"confirmPassword\": \"password\",\n" +
                 "    \"password\": \"password\"\n" +
@@ -75,8 +68,8 @@ class UserControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status", is(400)))
                 .andExpect(jsonPath("$.errors", is(notNullValue())))
-                .andExpect(jsonPath("$.errors.username", is(notNullValue())))
-                .andExpect(jsonPath("$.errors.username", is("Please provide valid username.")));
+                .andExpect(jsonPath("$.errors.email", is(notNullValue())))
+                .andExpect(jsonPath("$.errors.email", is("Please provide valid email.")));
     }
 
     @Test

@@ -49,12 +49,8 @@ public class UserController {
         userEntity.setFirstName(restUserRegistration.getFirstName());
         userEntity.setLastName(restUserRegistration.getLastName());
         userEntity.setBirthDate(restUserRegistration.getBirthDate());
-        userEntity.setCity(restUserRegistration.getCity());
-        userEntity.setCountry(restUserRegistration.getCountry());
-        userEntity.setEmail(restUserRegistration.getEmail());
-        userEntity.setIvaoId(restUserRegistration.getIvaoId());
-        userEntity.setVatsimId(restUserRegistration.getVatsimId());
         userEntity.setUsername(restUserRegistration.getEmail());
+        userEntity.setEmail(restUserRegistration.getEmail());
         userEntity.setPassword(passwordEncoder.encode(restUserRegistration.getPassword()));
         return userMapper.userEntityToRestUser(userService.saveUser(userEntity));
     }

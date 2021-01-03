@@ -2,12 +2,15 @@ package lst.sigv.pt.config;
 
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.format.datetime.DateFormatter;
 import org.springframework.format.datetime.DateFormatterRegistrar;
 import org.springframework.format.datetime.standard.DateTimeFormatterRegistrar;
 import org.springframework.format.support.DefaultFormattingConversionService;
 import org.springframework.format.support.FormattingConversionService;
+import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 
 import java.time.format.DateTimeFormatter;
@@ -15,6 +18,7 @@ import java.time.format.DateTimeFormatter;
 /**
  * Created by Afonseca on 15/11/20
  */
+@Configuration
 public class DateTimeConfig extends WebMvcConfigurationSupport {
 
     @Bean
@@ -33,5 +37,11 @@ public class DateTimeConfig extends WebMvcConfigurationSupport {
 
         return conversionService;
     }
+
+    @Override
+    protected void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**");
+    }
+
 
 }
