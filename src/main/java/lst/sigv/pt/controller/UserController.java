@@ -7,6 +7,8 @@ import lst.sigv.pt.model.api.RestAuthenticate;
 import lst.sigv.pt.model.api.RestAuthenticateResponse;
 import lst.sigv.pt.model.api.RestUser;
 import lst.sigv.pt.model.api.RestUserRegistration;
+import lst.sigv.pt.notification.NotificationNewUserData;
+import lst.sigv.pt.notification.service.EmailService;
 import lst.sigv.pt.service.LstUserDetailService;
 import lst.sigv.pt.service.UserService;
 import lst.sigv.pt.service.mapper.UserMapper;
@@ -32,14 +34,16 @@ public class UserController {
     private final LstUserDetailService userDetailService;
     private final AuthenticationManager authenticationManager;
     private final JwtUtils jwtUtils;
+    private final EmailService emailService;
 
-    public UserController(UserService userService, UserMapper userMapper, PasswordEncoder passwordEncoder, LstUserDetailService userDetailService, AuthenticationManager authenticationManager, JwtUtils jwtUtils) {
+    public UserController(UserService userService, UserMapper userMapper, PasswordEncoder passwordEncoder, LstUserDetailService userDetailService, AuthenticationManager authenticationManager, JwtUtils jwtUtils, EmailService emailService) {
         this.userService = userService;
         this.userMapper = userMapper;
         this.passwordEncoder = passwordEncoder;
         this.userDetailService = userDetailService;
         this.authenticationManager = authenticationManager;
         this.jwtUtils = jwtUtils;
+        this.emailService = emailService;
     }
 
     @PostMapping("/register")
@@ -52,7 +56,14 @@ public class UserController {
         userEntity.setUsername(restUserRegistration.getEmail());
         userEntity.setEmail(restUserRegistration.getEmail());
         userEntity.setPassword(passwordEncoder.encode(restUserRegistration.getPassword()));
-        return userMapper.userEntityToRestUser(userService.saveUser(userEntity));
+        RestUser user = userMapper.userEntityToRestUser(userService.saveUser(userEntity));
+        emailService.sendNewUserEmail(NotificationNewUserData.builder()
+                .userEmail(user.getEmail())
+                .name(user.getFirstName() + " " + user.getLastName())
+                .url("https://www.baeldung.com/spring-email")
+                .message("Hello Word!\n Welcome to Lusitania Air")
+                .build());
+        return user;
     }
 
     @PostMapping("/login")
