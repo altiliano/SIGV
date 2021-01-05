@@ -19,7 +19,7 @@ import java.time.format.DateTimeFormatter;
  * Created by Afonseca on 15/11/20
  */
 @Configuration
-public class DateTimeConfig extends WebMvcConfigurationSupport {
+public class AppConfig extends WebMvcConfigurationSupport {
 
     @Bean
     @Override

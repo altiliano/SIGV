@@ -10,7 +10,7 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
  * Created by Afonseca on 15/11/20
  */
 @Configuration
-public class AppConfiguration {
+public class MessagesConfig {
 
     @Bean
     public LocalValidatorFactoryBean getValidator() {
