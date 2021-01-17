@@ -20,6 +20,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.mail.MessagingException;
+import java.util.ArrayList;
+
 /**
  * Created by Afonseca on 15/11/20
  */
@@ -48,7 +51,7 @@ public class UserController {
 
     @PostMapping("/register")
     @ResponseBody
-    public RestUser registerUser(@Validated @RequestBody RestUserRegistration restUserRegistration) {
+    public RestUser registerUser(@Validated @RequestBody RestUserRegistration restUserRegistration) throws MessagingException {
         UserEntity userEntity = new UserEntity();
         userEntity.setFirstName(restUserRegistration.getFirstName());
         userEntity.setLastName(restUserRegistration.getLastName());
@@ -60,8 +63,6 @@ public class UserController {
         emailService.sendNewUserEmail(NotificationNewUserData.builder()
                 .userEmail(user.getEmail())
                 .name(user.getFirstName() + " " + user.getLastName())
-                .url("https://www.baeldung.com/spring-email")
-                .message("Hello Word!\n Welcome to Lusitania Air")
                 .build());
         return user;
     }
