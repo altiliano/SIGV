@@ -11,4 +11,6 @@ public interface UserService {
     UserEntity saveUser(UserEntity userEntity);
 
     UserEntity findUserByEmail(String email);
+
+    void activeUser(String email);
 }

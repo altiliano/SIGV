@@ -63,7 +63,7 @@ public class EmailServiceImpl implements EmailService {
                 .replacePath(null)
                 .build()
                 .toUriString();
-        return baseUrl + "/user/active/user?=" + token.getKey();
+        return baseUrl + "/user/active/key=" + token.getKey();
     }
 
 

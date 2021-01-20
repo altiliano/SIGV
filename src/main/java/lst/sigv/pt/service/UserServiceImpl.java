@@ -1,6 +1,9 @@
 package lst.sigv.pt.service;
 
+import lst.sigv.pt.exception.InvalidUserStatusException;
+import lst.sigv.pt.exception.UserNotFoundException;
 import lst.sigv.pt.model.UserEntity;
+import lst.sigv.pt.model.UserStatus;
 import lst.sigv.pt.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
@@ -17,17 +20,30 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserEntity findUserByUsername(String username) {
-        return userRepository.findByUsername(username).orElse( null);
+        return userRepository.findByUsername(username).orElse(null);
     }
 
     @Override
-    public UserEntity saveUser(UserEntity userEntity){
+    public UserEntity saveUser(UserEntity userEntity) {
         return userRepository.save(userEntity);
     }
 
     @Override
     public UserEntity findUserByEmail(String email) {
         return userRepository.findByEmail(email).orElse(null);
+    }
+
+    @Override
+    public void activeUser(String email) {
+        UserEntity user = findUserByEmail(email);
+        if (user == null) {
+            throw new UserNotFoundException("user with email: " + email + " not found");
+        }
+        if (!user.getStatus().equals(UserStatus.ACTIVE) || !user.getStatus().equals(UserStatus.DELETED)) {
+            user.setStatus(UserStatus.ACTIVE);
+            saveUser(user);
+        }
+        throw new InvalidUserStatusException("invalid user status");
     }
 
 
