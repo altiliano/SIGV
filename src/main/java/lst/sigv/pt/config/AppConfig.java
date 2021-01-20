@@ -10,10 +10,15 @@ import org.springframework.format.datetime.standard.DateTimeFormatterRegistrar;
 import org.springframework.format.support.DefaultFormattingConversionService;
 import org.springframework.format.support.FormattingConversionService;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
+import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
+import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
+import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 
 import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
 /**
  * Created by Afonseca on 15/11/20
@@ -41,6 +46,23 @@ public class AppConfig extends WebMvcConfigurationSupport {
     @Override
     protected void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**");
+    }
+
+
+    @Bean
+    public MessageSource messageSource() {
+        ReloadableResourceBundleMessageSource messageSource
+                = new ReloadableResourceBundleMessageSource();
+        messageSource.setBasename("classpath:messages/messages");
+        messageSource.setDefaultEncoding("UTF-8");
+        return messageSource;
+    }
+
+    @Bean
+    public LocalValidatorFactoryBean getValidator() {
+        LocalValidatorFactoryBean validatorFactoryBean = new LocalValidatorFactoryBean();
+        validatorFactoryBean.setValidationMessageSource(messageSource());
+        return validatorFactoryBean;
     }
 
 

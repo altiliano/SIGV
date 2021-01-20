@@ -15,22 +15,22 @@ import java.sql.Date;
  */
 @Getter
 @Setter
-@FieldsValueMatch.List({@FieldsValueMatch(field = "password", fieldMatch = "confirmPassword", message = "{password.FieldsValueMatch}"),
-        @FieldsValueMatch(field = "email", fieldMatch = "emailConfirmation", message = "{email.FieldsValueMatch}")})
+@FieldsValueMatch.List({@FieldsValueMatch(field = "password", fieldMatch = "confirmPassword", message = "{password.fieldsValueMatch}"),
+        @FieldsValueMatch(field = "email", fieldMatch = "emailConfirmation", message = "{email.fieldsValueMatch}")})
 public class RestUserRegistration implements Serializable {
-    @NotEmpty(message = "{firstName.NotEmpty}")
+    @NotEmpty(message = "{firstName.notEmpty}")
     private String firstName;
-    @NotEmpty(message = "{lastName.NotEmpty}")
+    @NotEmpty(message = "{lastName.notEmpty}")
     private String lastName;
-    @NotEmpty(message = "{email.NotEmpty}")
+    @NotEmpty(message = "{email.notEmpty}")
     @Email
     private String email;
-    @NotEmpty(message = "{emailConfirmation.NotEmpty}")
+    @NotEmpty(message = "{emailConfirmation.notEmpty}")
     private String emailConfirmation;
-    @NotNull(message = "{birthDate.NotNul}")
+    @NotNull(message = "{birthDate.notNul}")
     private Date birthDate;
-    @NotEmpty(message = "{password.NotEmpty}")
+    @NotEmpty(message = "{password.notEmpty}")
     private String password;
-    @NotEmpty(message = "{confirmPassword.NotEmpty}")
+    @NotEmpty(message = "{confirmPassword.notEmpty}")
     private String confirmPassword;
 }
