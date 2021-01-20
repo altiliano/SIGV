@@ -35,4 +35,5 @@ public class UserEntity {
     @JoinTable( name = "users_booking", joinColumns = {@JoinColumn (name = "USER_ID", referencedColumnName = "ID")},
             inverseJoinColumns = {@JoinColumn(name = "BOOKING_ID", referencedColumnName = "ID")})
     private BookingEntity booking;
+    private UserStatus status;
 }
