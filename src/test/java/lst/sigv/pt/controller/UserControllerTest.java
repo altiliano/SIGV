@@ -55,7 +55,6 @@ class UserControllerTest {
     @Test
     void testValidation() throws Exception {
         String registerUserInJson = "{\n" +
-                "    \"firstName\":\"teste\",\n" +
                 "    \"lastName\": \"teste\",\n" +
                 "    \"emailConfirmation\": \"aa@gmail.com\",\n" +
                 "    \"birthDate\": \"2018-10-22\",\n" +
@@ -69,6 +68,8 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.status", is(400)))
                 .andExpect(jsonPath("$.errors", is(notNullValue())))
                 .andExpect(jsonPath("$.errors.email", is(notNullValue())))
+                .andExpect(jsonPath("$.errors.firstName", is(notNullValue())))
+                .andExpect(jsonPath("$.errors.firstName", is("Please provide valid name.")))
                 .andExpect(jsonPath("$.errors.email", is("Please provide valid email.")));
     }
 
