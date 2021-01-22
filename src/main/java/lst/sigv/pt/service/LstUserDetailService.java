@@ -1,7 +1,7 @@
 package lst.sigv.pt.service;
 
 import lombok.RequiredArgsConstructor;
-import lst.sigv.pt.model.Authority;
+import lst.sigv.pt.model.AuthorityEntity;
 import lst.sigv.pt.model.UserEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -35,10 +35,10 @@ public class LstUserDetailService implements UserDetailsService {
         return new org.springframework.security.core.userdetails.User(userEntity.getUsername(), userEntity.getPassword(), convertSpringAuthorities(userEntity.getAuthorities()));
     }
 
-    private Collection<? extends GrantedAuthority> convertSpringAuthorities(Set<Authority> authorities) {
+    private Collection<? extends GrantedAuthority> convertSpringAuthorities(Set<AuthorityEntity> authorities) {
         if (authorities != null && authorities.size() > 0) {
             return authorities.stream()
-                    .map(Authority::getRole)
+                    .map(AuthorityEntity::getRole)
                     .map(SimpleGrantedAuthority::new)
                     .collect(Collectors.toSet());
         }

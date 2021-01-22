@@ -90,7 +90,7 @@ public class UserController {
     public ResponseEntity<?> activeUser(@PathVariable("key") String tokenKey) {
         try {
             Token token = tokenService.verifyToken(tokenKey);
-            Assert.notNull(token, "key cann't be null");
+            Assert.notNull(token, "key can't be null");
             String userEmail = token.getExtendedInformation();
             userService.activeUser(userEmail);
             return ResponseEntity.ok().body("User active successfully");
