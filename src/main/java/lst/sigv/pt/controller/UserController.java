@@ -9,7 +9,7 @@ import lst.sigv.pt.model.api.RestUser;
 import lst.sigv.pt.model.api.RestUserRegistration;
 import lst.sigv.pt.notification.NotificationNewUserData;
 import lst.sigv.pt.notification.service.EmailService;
-import lst.sigv.pt.service.LstUserDetailService;
+import lst.sigv.pt.service.impl.LstUserDetailService;
 import lst.sigv.pt.service.UserService;
 import lst.sigv.pt.service.mapper.UserMapper;
 import org.springframework.http.ResponseEntity;

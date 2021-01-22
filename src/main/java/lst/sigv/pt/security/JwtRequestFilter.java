@@ -1,7 +1,7 @@
 package lst.sigv.pt.security;
 
 import lst.sigv.pt.config.JwtUtils;
-import lst.sigv.pt.service.LstUserDetailService;
+import lst.sigv.pt.service.impl.LstUserDetailService;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;

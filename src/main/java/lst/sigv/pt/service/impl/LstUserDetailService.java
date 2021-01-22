@@ -1,8 +1,9 @@
-package lst.sigv.pt.service;
+package lst.sigv.pt.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lst.sigv.pt.model.AuthorityEntity;
 import lst.sigv.pt.model.UserEntity;
+import lst.sigv.pt.service.UserService;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

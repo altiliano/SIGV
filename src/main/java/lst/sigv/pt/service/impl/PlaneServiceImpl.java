@@ -1,4 +1,4 @@
-package lst.sigv.pt.service;
+package lst.sigv.pt.service.impl;
 
 import lst.sigv.pt.exception.InvalidPlaneStatusException;
 import lst.sigv.pt.exception.PlaneAlreadyExistException;
@@ -6,6 +6,7 @@ import lst.sigv.pt.exception.PlaneNotFoundException;
 import lst.sigv.pt.model.PlaneEntity;
 import lst.sigv.pt.model.PlaneStatus;
 import lst.sigv.pt.repository.PlaneRepository;
+import lst.sigv.pt.service.PlaneService;
 import net.bytebuddy.implementation.bytecode.Throw;
 import org.springframework.stereotype.Service;
 

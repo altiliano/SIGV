@@ -1,7 +1,7 @@
 package lst.sigv.pt.config;
 
 import lst.sigv.pt.security.JwtRequestFilter;
-import lst.sigv.pt.service.LstUserDetailService;
+import lst.sigv.pt.service.impl.LstUserDetailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

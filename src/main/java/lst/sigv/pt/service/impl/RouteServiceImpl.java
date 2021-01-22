@@ -1,10 +1,11 @@
-package lst.sigv.pt.service;
+package lst.sigv.pt.service.impl;
 
 import lst.sigv.pt.exception.InvalidRouteStatusException;
 import lst.sigv.pt.model.RouteEntity;
 import lst.sigv.pt.model.RouteStatus;
 import lst.sigv.pt.model.api.RestRoute;
 import lst.sigv.pt.repository.RouteRepository;
+import lst.sigv.pt.service.RouteService;
 import lst.sigv.pt.service.mapper.RouteMapper;
 import org.springframework.stereotype.Service;
 

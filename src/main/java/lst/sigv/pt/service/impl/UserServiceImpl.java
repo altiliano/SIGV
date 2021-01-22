@@ -1,10 +1,11 @@
-package lst.sigv.pt.service;
+package lst.sigv.pt.service.impl;
 
 import lst.sigv.pt.exception.InvalidUserStatusException;
 import lst.sigv.pt.exception.UserNotFoundException;
 import lst.sigv.pt.model.UserEntity;
 import lst.sigv.pt.model.UserStatus;
 import lst.sigv.pt.repository.UserRepository;
+import lst.sigv.pt.service.UserService;
 import org.springframework.stereotype.Service;
 
 /**
