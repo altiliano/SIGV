@@ -12,16 +12,19 @@ import lst.sigv.pt.notification.service.EmailService;
 import lst.sigv.pt.service.LstUserDetailService;
 import lst.sigv.pt.service.UserService;
 import lst.sigv.pt.service.mapper.UserMapper;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.token.Token;
+import org.springframework.security.core.token.TokenService;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.util.Assert;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.mail.MessagingException;
-import java.util.ArrayList;
 
 /**
  * Created by Afonseca on 15/11/20
@@ -38,8 +41,9 @@ public class UserController {
     private final AuthenticationManager authenticationManager;
     private final JwtUtils jwtUtils;
     private final EmailService emailService;
+    private final TokenService tokenService;
 
-    public UserController(UserService userService, UserMapper userMapper, PasswordEncoder passwordEncoder, LstUserDetailService userDetailService, AuthenticationManager authenticationManager, JwtUtils jwtUtils, EmailService emailService) {
+    public UserController(UserService userService, UserMapper userMapper, PasswordEncoder passwordEncoder, LstUserDetailService userDetailService, AuthenticationManager authenticationManager, JwtUtils jwtUtils, EmailService emailService, TokenService tokenService) {
         this.userService = userService;
         this.userMapper = userMapper;
         this.passwordEncoder = passwordEncoder;
@@ -47,6 +51,7 @@ public class UserController {
         this.authenticationManager = authenticationManager;
         this.jwtUtils = jwtUtils;
         this.emailService = emailService;
+        this.tokenService = tokenService;
     }
 
     @PostMapping("/register")
@@ -79,5 +84,20 @@ public class UserController {
             log.error("Can not authenticate user " + authenticate.getUsername() + " BadCredential");
             throw new BadCredentialsException("Incorrect user or password", exception);
         }
+    }
+
+    @RequestMapping(value = "/active/{key}", method = RequestMethod.POST)
+    public ResponseEntity<?> activeUser(@PathVariable("key") String tokenKey) {
+        try {
+            Token token = tokenService.verifyToken(tokenKey);
+            Assert.notNull(token, "key cann't be null");
+            String userEmail = token.getExtendedInformation();
+            userService.activeUser(userEmail);
+            return ResponseEntity.ok().body("User active successfully");
+        } catch (Exception exception) {
+            log.error("Can't active user");
+            return ResponseEntity.badRequest().body("Can't active user");
+        }
+
     }
 }
