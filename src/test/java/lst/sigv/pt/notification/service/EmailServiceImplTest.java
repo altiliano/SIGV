@@ -2,6 +2,7 @@ package lst.sigv.pt.notification.service;
 
 import lst.sigv.pt.notification.NotificationNewUserData;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -20,7 +21,7 @@ class EmailServiceImplTest {
     void setUp() {
     }
 
-    // @Test
+     @Test
     void sendNewUserEmail() throws MessagingException {
         emailService.sendNewUserEmail(NotificationNewUserData.builder()
                 .userEmail("a@gmail.com")
