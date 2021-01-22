@@ -30,7 +30,7 @@ public class UserEntity {
     @ManyToMany( cascade = CascadeType.MERGE)
     @JoinTable(name = "users_authority", joinColumns = {@JoinColumn ( name = "USER_ID", referencedColumnName = "ID")},
             inverseJoinColumns = {@JoinColumn(name = "AUTHORITY_ID", referencedColumnName = "ID")})
-    private Set<Authority> authorities;
+    private Set<AuthorityEntity> authorities;
     @OneToOne( cascade = CascadeType.ALL)
     @JoinTable( name = "users_booking", joinColumns = {@JoinColumn (name = "USER_ID", referencedColumnName = "ID")},
             inverseJoinColumns = {@JoinColumn(name = "BOOKING_ID", referencedColumnName = "ID")})
