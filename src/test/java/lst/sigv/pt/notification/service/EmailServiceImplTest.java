@@ -21,7 +21,6 @@ class EmailServiceImplTest {
     void setUp() {
     }
 
-     @Test
     void sendNewUserEmail() throws MessagingException {
         emailService.sendNewUserEmail(NotificationNewUserData.builder()
                 .userEmail("a@gmail.com")
