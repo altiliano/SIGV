@@ -9,6 +9,7 @@ import lst.sigv.pt.service.AuthorityManagementService;
 import lst.sigv.pt.service.UserService;
 import lst.sigv.pt.service.mapper.AuthorityMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,10 +37,23 @@ public class AuthorityManagementServiceImpl implements AuthorityManagementServic
         return authorities;
     }
 
+    @Transactional
     @Override
     public void associateAuthority(RestUser user, RestAuthority authority) {
         AuthorityEntity authorityEntity = authorityRepository.findByRole(authority.getRole());
         UserEntity userEntity = userService.findUserByEmail(user.getEmail());
-        authorityEntity.getUsers().add(userEntity);
+        userEntity.getAuthorities().add(authorityEntity);
+        userService.saveUser(userEntity);
+    }
+
+    @Override
+    public void addAuthorities(List<RestAuthority> authorities) {
+        List<AuthorityEntity> authorityEntities = new ArrayList<>();
+        for (RestAuthority authority : authorities) {
+            AuthorityEntity authorityEntity = new AuthorityEntity();
+            authorityEntity.setRole(authority.getRole());
+            authorityEntities.add(authorityEntity);
+        }
+        authorityRepository.saveAll(authorityEntities);
     }
 }

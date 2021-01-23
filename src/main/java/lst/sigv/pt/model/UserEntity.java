@@ -5,6 +5,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.sql.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -30,7 +31,7 @@ public class UserEntity {
     @ManyToMany( cascade = CascadeType.MERGE)
     @JoinTable(name = "users_authority", joinColumns = {@JoinColumn ( name = "USER_ID", referencedColumnName = "ID")},
             inverseJoinColumns = {@JoinColumn(name = "AUTHORITY_ID", referencedColumnName = "ID")})
-    private Set<AuthorityEntity> authorities;
+    private Set<AuthorityEntity> authorities = new HashSet<>();
     @OneToOne( cascade = CascadeType.ALL)
     @JoinTable( name = "users_booking", joinColumns = {@JoinColumn (name = "USER_ID", referencedColumnName = "ID")},
             inverseJoinColumns = {@JoinColumn(name = "BOOKING_ID", referencedColumnName = "ID")})

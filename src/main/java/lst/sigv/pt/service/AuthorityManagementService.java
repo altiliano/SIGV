@@ -10,5 +10,8 @@ import java.util.List;
  */
 public interface AuthorityManagementService {
     List<RestAuthority> getAuthorities();
+
     void associateAuthority(RestUser user, RestAuthority authority);
+
+    void addAuthorities(List<RestAuthority> authorities);
 }

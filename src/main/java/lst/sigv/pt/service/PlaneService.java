@@ -18,4 +18,6 @@ public interface PlaneService {
     boolean existsByRegistration(String registration);
 
     PlaneEntity findPlaneById(Long planeId);
+
+    Iterable<PlaneEntity> getAllActivePlane();
 }

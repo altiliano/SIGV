@@ -7,7 +7,6 @@ import lst.sigv.pt.model.PlaneEntity;
 import lst.sigv.pt.model.PlaneStatus;
 import lst.sigv.pt.repository.PlaneRepository;
 import lst.sigv.pt.service.PlaneService;
-import net.bytebuddy.implementation.bytecode.Throw;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -64,5 +63,10 @@ public class PlaneServiceImpl implements PlaneService {
 
     private boolean isValidStatus(PlaneStatus currentStatus, PlaneStatus newStatus) {
         return currentStatus.equals(newStatus);
+    }
+
+    @Override
+    public Iterable<PlaneEntity> getAllActivePlane() {
+        return planeRepository.findAll();
     }
 }
