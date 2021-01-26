@@ -1,6 +1,7 @@
 package lst.sigv.pt.service.impl;
 
 import lst.sigv.pt.exception.InvalidUserStatusException;
+import lst.sigv.pt.exception.UserAlreadyExitException;
 import lst.sigv.pt.exception.UserNotFoundException;
 import lst.sigv.pt.model.UserEntity;
 import lst.sigv.pt.model.UserStatus;
@@ -45,6 +46,14 @@ public class UserServiceImpl implements UserService {
             saveUser(user);
         }
         throw new InvalidUserStatusException("invalid user status");
+    }
+
+    @Override
+    public UserEntity createUser(UserEntity userEntity) {
+        if (findUserByEmail(userEntity.getEmail()) != null) {
+            throw new UserAlreadyExitException("user whit email: " + userEntity.getEmail() + "already exist");
+        }
+        return saveUser(userEntity);
     }
 
 
