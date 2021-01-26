@@ -13,4 +13,6 @@ public interface UserService {
     UserEntity findUserByEmail(String email);
 
     void activeUser(String email);
+
+    UserEntity createUser(UserEntity userEntity);
 }

@@ -9,21 +9,19 @@ import org.springframework.format.datetime.DateFormatterRegistrar;
 import org.springframework.format.datetime.standard.DateTimeFormatterRegistrar;
 import org.springframework.format.support.DefaultFormattingConversionService;
 import org.springframework.format.support.FormattingConversionService;
-import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.validation.MessageCodesResolver;
 import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 
 /**
  * Created by Afonseca on 15/11/20
  */
 @Configuration
 public class AppConfig extends WebMvcConfigurationSupport {
+
 
     @Bean
     @Override
@@ -54,12 +52,11 @@ public class AppConfig extends WebMvcConfigurationSupport {
         return validatorFactoryBean;
     }
 
-
     public MessageSource messageSource() {
-        ReloadableResourceBundleMessageSource messageSource
-                = new ReloadableResourceBundleMessageSource();
+        ReloadableResourceBundleMessageSource  messageSource = new ReloadableResourceBundleMessageSource();
         messageSource.setBasename("classpath:messages/messages");
         messageSource.setDefaultEncoding("UTF-8");
         return messageSource;
     }
+
 }

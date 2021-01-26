@@ -64,7 +64,7 @@ public class UserController {
         userEntity.setUsername(restUserRegistration.getEmail());
         userEntity.setEmail(restUserRegistration.getEmail());
         userEntity.setPassword(passwordEncoder.encode(restUserRegistration.getPassword()));
-        RestUser user = userMapper.userEntityToRestUser(userService.saveUser(userEntity));
+        RestUser user = userMapper.userEntityToRestUser(userService.createUser(userEntity));
         emailService.sendNewUserEmail(NotificationNewUserData.builder()
                 .userEmail(user.getEmail())
                 .name(user.getFirstName() + " " + user.getLastName())
