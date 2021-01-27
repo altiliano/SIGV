@@ -23,8 +23,11 @@ public class UserEntity {
     private String email;
     private String country;
     private String city;
-    private int ivaoId;
-    private int vatsimId;
+    private int  points;
+    private long hoursFlown;
+    private int pireps;
+    private int averageLandingRate;
+    private String currentLocation;
     private Date birthDate;
     private String username;
     private String password;
