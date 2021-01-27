@@ -67,8 +67,8 @@ public class DataLoader implements CommandLineRunner {
     private void createUser() {
         if (userService.findUserByUsername("admin@gmial.com") == null) {
             UserEntity user = new UserEntity();
-            user.setEmail("admin@gmial.com");
-            user.setUsername("admin@gmial.com");
+            user.setEmail("admin@gmail.com");
+            user.setUsername("admin@gmail.com");
             user.setFirstName("admin");
             user.setPassword(passwordEncoder.encode("admin"));
             user.setStatus(UserStatus.ACTIVE);
