@@ -78,7 +78,6 @@ public class UserController {
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authenticate.getUsername(), authenticate.getPassword()));
             UserDetails userDetails = userDetailService.loadUserByUsername(authenticate.getUsername());
-            //TODO get authorities for the user
             return new RestAuthenticateResponse(jwtUtils.generateToken(userDetails), null);
         } catch (BadCredentialsException exception) {
             log.error("Can not authenticate user " + authenticate.getUsername() + " BadCredential");
