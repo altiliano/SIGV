@@ -9,8 +9,8 @@ import lst.sigv.pt.model.api.RestUser;
 import lst.sigv.pt.model.api.RestUserRegistration;
 import lst.sigv.pt.notification.NotificationNewUserData;
 import lst.sigv.pt.notification.service.EmailService;
-import lst.sigv.pt.service.impl.LstUserDetailService;
 import lst.sigv.pt.service.UserService;
+import lst.sigv.pt.service.impl.LstUserDetailService;
 import lst.sigv.pt.service.mapper.UserMapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -25,6 +25,8 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.mail.MessagingException;
+import java.security.Principal;
+import java.util.regex.Pattern;
 
 /**
  * Created by Afonseca on 15/11/20
@@ -98,5 +100,11 @@ public class UserController {
             return ResponseEntity.badRequest().body("Can't active user");
         }
 
+    }
+
+    @GetMapping("/detail")
+    @ResponseBody
+    public RestUser getUserDetail(Principal principal) {
+        return userMapper.userEntityToRestUser(userService.findUserByUsername(principal.getName()));
     }
 }
