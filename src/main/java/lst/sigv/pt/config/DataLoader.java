@@ -106,7 +106,7 @@ public class DataLoader implements CommandLineRunner {
         RestRoute route = new RestRoute();
         route.setDepart("LPPT");
         route.setDestination("GVNP");
-        route.setStatus(RouteStatus.ACTICE);
+        route.setStatus(RouteStatus.ACTIVE);
         for (PlaneEntity plane : planeEntities) {
             if (route.getPlanes() == null){
                 route.setPlanes(new HashSet<>());

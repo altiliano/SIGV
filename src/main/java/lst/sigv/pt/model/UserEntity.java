@@ -31,13 +31,16 @@ public class UserEntity {
     private Date birthDate;
     private String username;
     private String password;
-    @ManyToMany( cascade = CascadeType.MERGE)
+
+    @OneToMany( cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
     @JoinTable(name = "users_authority", joinColumns = {@JoinColumn ( name = "USER_ID", referencedColumnName = "ID")},
             inverseJoinColumns = {@JoinColumn(name = "AUTHORITY_ID", referencedColumnName = "ID")})
     private Set<AuthorityEntity> authorities = new HashSet<>();
+
     @OneToOne( cascade = CascadeType.ALL)
     @JoinTable( name = "users_booking", joinColumns = {@JoinColumn (name = "USER_ID", referencedColumnName = "ID")},
             inverseJoinColumns = {@JoinColumn(name = "BOOKING_ID", referencedColumnName = "ID")})
     private BookingEntity booking;
+
     private UserStatus status;
 }
