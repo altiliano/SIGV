@@ -118,7 +118,7 @@ class RouteControllerTest {
     @Test
     void activeRoute() throws Exception {
         RestRoute restRoute = getRoute();
-        restRoute.setStatus(RouteStatus.ACTICE);
+        restRoute.setStatus(RouteStatus.ACTIVE);
         when(routeService.activeRoute("1")).thenReturn(restRoute);
 
         mockMvc.perform(post("/api/route/active")

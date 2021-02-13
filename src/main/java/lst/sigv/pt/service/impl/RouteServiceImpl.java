@@ -42,10 +42,10 @@ public class RouteServiceImpl implements RouteService {
     @Override
     public RestRoute activeRoute(String routeId) {
         RouteEntity entity = getRouteById(routeId);
-        if (isNotValidStatus(entity.getStatus(), RouteStatus.ACTICE)) {
+        if (isNotValidStatus(entity.getStatus(), RouteStatus.ACTIVE)) {
             throw new InvalidRouteStatusException("Can not active route with id: " + routeId);
         }
-        entity.setStatus(RouteStatus.ACTICE);
+        entity.setStatus(RouteStatus.ACTIVE);
         return routeMapper.routeEntityToRestRoute(routeRepository.save(entity));
     }
 
@@ -69,7 +69,7 @@ public class RouteServiceImpl implements RouteService {
     @Override
     public List<RestRoute> getAllActiveRoute() {
         List<RestRoute> routes = new ArrayList<>();
-        routeRepository.findAllByStatus(RouteStatus.ACTICE).forEach(routeEntity -> routes.add(routeMapper.routeEntityToRestRoute(routeEntity)));
+        routeRepository.findAllByStatus(RouteStatus.ACTIVE).forEach(routeEntity -> routes.add(routeMapper.routeEntityToRestRoute(routeEntity)));
         return routes;
     }
 
