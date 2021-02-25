@@ -3,18 +3,27 @@ package lst.sigv.pt.config;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import javax.crypto.spec.SecretKeySpec;
+import java.security.Key;
+import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
 @Service
 public class JwtUtils {
 
-    private String SECRET_KEY = "abcdefqigklmnopkrstuv1234567890abcdefqigklmnopkrstuv1";
+    @Value("${secret.key}")
+    private String SECRET_KEY;
+    @Value("${token.expiration.time.in.minutes}")
+    private int expirationTimeInMinutes;
+    private Key key;
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
@@ -28,8 +37,9 @@ public class JwtUtils {
         final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
     }
+
     private Claims extractAllClaims(String token) {
-        return Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody();
+        return Jwts.parserBuilder().setSigningKey(getKey()).build().parseClaimsJws(token).getBody();
     }
 
     private Boolean isTokenExpired(String token) {
@@ -42,14 +52,21 @@ public class JwtUtils {
     }
 
     private String createToken(Map<String, Object> claims, String subject) {
-
         return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10))
-                .signWith(SignatureAlgorithm.HS256, SECRET_KEY).compact();
+                .setExpiration(new Date( System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(expirationTimeInMinutes)))
+                .signWith(getKey()).compact();
     }
 
     public Boolean validateToken(String token, UserDetails userDetails) {
         final String username = extractUsername(token);
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+    }
+
+    private Key getKey() {
+        if (key != null) {
+            return key;
+        }
+        key = new SecretKeySpec(SECRET_KEY.getBytes(), SignatureAlgorithm.HS256.getJcaName());
+        return key;
     }
 }
