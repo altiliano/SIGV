@@ -3,19 +3,18 @@ package lst.sigv.pt.controller;
 import lombok.extern.slf4j.Slf4j;
 import lst.sigv.pt.config.JwtUtils;
 import lst.sigv.pt.model.UserEntity;
-import lst.sigv.pt.model.api.RestAuthenticate;
-import lst.sigv.pt.model.api.RestAuthenticateResponse;
-import lst.sigv.pt.model.api.RestUser;
-import lst.sigv.pt.model.api.RestUserRegistration;
+import lst.sigv.pt.model.api.*;
 import lst.sigv.pt.notification.NotificationNewUserData;
 import lst.sigv.pt.notification.service.EmailService;
 import lst.sigv.pt.service.UserService;
 import lst.sigv.pt.service.impl.LstUserDetailService;
+import lst.sigv.pt.service.mapper.AuthorityMapper;
 import lst.sigv.pt.service.mapper.UserMapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.token.Token;
 import org.springframework.security.core.token.TokenService;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -26,7 +25,10 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.mail.MessagingException;
 import java.security.Principal;
-import java.util.regex.Pattern;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Created by Afonseca on 15/11/20
@@ -80,7 +82,7 @@ public class UserController {
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authenticate.getUsername(), authenticate.getPassword()));
             UserDetails userDetails = userDetailService.loadUserByUsername(authenticate.getUsername());
-            return new RestAuthenticateResponse(jwtUtils.generateToken(userDetails), null);
+            return new RestAuthenticateResponse(jwtUtils.generateToken(userDetails), convertAuthoritiesToRestAuthorities(userDetails.getAuthorities()));
         } catch (BadCredentialsException exception) {
             log.error("Can not authenticate user " + authenticate.getUsername() + " BadCredential");
             throw new BadCredentialsException("Incorrect user or password", exception);
@@ -106,5 +108,15 @@ public class UserController {
     @ResponseBody
     public RestUser getUserDetail(Principal principal) {
         return userMapper.userEntityToRestUser(userService.findUserByUsername(principal.getName()));
+    }
+
+
+    private Set<RestAuthority> convertAuthoritiesToRestAuthorities(Collection< ? extends GrantedAuthority> grantedAuthorities) {
+        if (grantedAuthorities != null && grantedAuthorities.size() > 0) {
+            return grantedAuthorities.stream()
+                    .map(grantedAuthority -> new RestAuthority(grantedAuthority.getAuthority()))
+                    .collect(Collectors.toSet());
+        }
+        return new HashSet<>();
     }
 }
