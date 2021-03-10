@@ -8,8 +8,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.spec.SecretKeySpec;
+import javax.servlet.http.HttpServletRequest;
 import java.security.Key;
-import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -23,6 +23,8 @@ public class JwtUtils {
     private String SECRET_KEY;
     @Value("${token.expiration.time.in.minutes}")
     private int expirationTimeInMinutes;
+    @Value("${limit.to.refresh.token.in.minutes}")
+    private int limitTimeToRefreshTokenInMinutes;
     private Key key;
 
     public String extractUsername(String token) {
@@ -53,7 +55,7 @@ public class JwtUtils {
 
     private String createToken(Map<String, Object> claims, String subject) {
         return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date( System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(expirationTimeInMinutes)))
+                .setExpiration(new Date(System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(expirationTimeInMinutes)))
                 .signWith(getKey()).compact();
     }
 
@@ -69,4 +71,20 @@ public class JwtUtils {
         key = new SecretKeySpec(SECRET_KEY.getBytes(), SignatureAlgorithm.HS256.getJcaName());
         return key;
     }
+
+
+    public boolean isCanRefreshToken(Date expiredTime) {
+        Date currentDate = new Date(System.currentTimeMillis());
+        Date limitDate = new Date(expiredTime.getTime() + limitTimeToRefreshTokenInMinutes);
+        return currentDate.before(limitDate);
+    }
+
+    public String extractToken(HttpServletRequest request) {
+        String authorizationHeader = request.getHeader("Authorization");
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            return authorizationHeader.substring(7);
+        }
+        return null;
+    }
+
 }

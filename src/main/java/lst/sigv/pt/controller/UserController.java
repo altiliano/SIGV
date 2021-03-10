@@ -6,25 +6,26 @@ import lst.sigv.pt.model.UserEntity;
 import lst.sigv.pt.model.api.*;
 import lst.sigv.pt.notification.NotificationNewUserData;
 import lst.sigv.pt.notification.service.EmailService;
+import lst.sigv.pt.service.AuthenticationFacade;
 import lst.sigv.pt.service.UserService;
 import lst.sigv.pt.service.impl.LstUserDetailService;
-import lst.sigv.pt.service.mapper.AuthorityMapper;
 import lst.sigv.pt.service.mapper.UserMapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.token.Token;
 import org.springframework.security.core.token.TokenService;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.Assert;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.mail.MessagingException;
-import java.security.Principal;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -46,8 +47,9 @@ public class UserController {
     private final JwtUtils jwtUtils;
     private final EmailService emailService;
     private final TokenService tokenService;
+    private final AuthenticationFacade authenticationFacade;
 
-    public UserController(UserService userService, UserMapper userMapper, PasswordEncoder passwordEncoder, LstUserDetailService userDetailService, AuthenticationManager authenticationManager, JwtUtils jwtUtils, EmailService emailService, TokenService tokenService) {
+    public UserController(UserService userService, UserMapper userMapper, PasswordEncoder passwordEncoder, LstUserDetailService userDetailService, AuthenticationManager authenticationManager, JwtUtils jwtUtils, EmailService emailService, TokenService tokenService, AuthenticationFacade authenticationFacade) {
         this.userService = userService;
         this.userMapper = userMapper;
         this.passwordEncoder = passwordEncoder;
@@ -56,6 +58,7 @@ public class UserController {
         this.jwtUtils = jwtUtils;
         this.emailService = emailService;
         this.tokenService = tokenService;
+        this.authenticationFacade = authenticationFacade;
     }
 
     @PostMapping("/register")
@@ -106,12 +109,21 @@ public class UserController {
 
     @GetMapping("/detail")
     @ResponseBody
-    public RestUser getUserDetail(Principal principal) {
-        return userMapper.userEntityToRestUser(userService.findUserByUsername(principal.getName()));
+    public RestUser getUserDetail() throws UsernameNotFoundException {
+        return new RestUser();
+
+        //return userMapper.userEntityToRestUser(userService.findUserByUsername(username));
     }
 
 
-    private Set<RestAuthority> convertAuthoritiesToRestAuthorities(Collection< ? extends GrantedAuthority> grantedAuthorities) {
+    @GetMapping("/refreshToken")
+    public ResponseEntity<?> refreshToken() {
+        UserDetails userDetails = (UserDetails) authenticationFacade.getAuthentication().getPrincipal();
+        return ResponseEntity.ok().body(jwtUtils.generateToken(userDetails));
+    }
+
+
+    private Set<RestAuthority> convertAuthoritiesToRestAuthorities(Collection<? extends GrantedAuthority> grantedAuthorities) {
         if (grantedAuthorities != null && grantedAuthorities.size() > 0) {
             return grantedAuthorities.stream()
                     .map(grantedAuthority -> new RestAuthority(grantedAuthority.getAuthority()))
@@ -119,4 +131,5 @@ public class UserController {
         }
         return new HashSet<>();
     }
+
 }

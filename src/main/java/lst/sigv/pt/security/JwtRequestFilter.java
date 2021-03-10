@@ -1,7 +1,10 @@
 package lst.sigv.pt.security;
 
+import io.jsonwebtoken.ExpiredJwtException;
+import lombok.extern.slf4j.Slf4j;
 import lst.sigv.pt.config.JwtUtils;
 import lst.sigv.pt.service.impl.LstUserDetailService;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,6 +19,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @Component
+@Slf4j
 public class JwtRequestFilter extends OncePerRequestFilter {
     private final LstUserDetailService userDetailService;
     private final JwtUtils jwtUtils;
@@ -28,31 +32,56 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
-        final String authorizationHeader = request.getHeader("Authorization");
-
         String username = null;
         String jwt = null;
-
-        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-            jwt = authorizationHeader.substring(7);
-            username = jwtUtils.extractUsername(jwt);
-        }
-
-
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-
-            UserDetails userDetails = this.userDetailService.loadUserByUsername(username);
-
-            if (jwtUtils.validateToken(jwt, userDetails)) {
-
-                UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
-                        userDetails, null, userDetails.getAuthorities());
-                usernamePasswordAuthenticationToken
-                        .setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+        try {
+            jwt = jwtUtils.extractToken(request);
+            if (jwt != null) {
+                username = jwtUtils.extractUsername(jwt);
             }
+
+            if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+
+                UserDetails userDetails = getUserDetails(username);
+
+                if (jwtUtils.validateToken(jwt, userDetails)) {
+
+                    createUsernamePasswordAuthenticationToken(request, userDetails);
+                }
+            }
+
+        } catch (ExpiredJwtException exception) {
+            handleExpiredToken(request, response, exception);
         }
+
         filterChain.doFilter(request, response);
+
+    }
+
+    private void createUsernamePasswordAuthenticationToken(HttpServletRequest request, UserDetails userDetails) {
+        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
+                userDetails, null, userDetails.getAuthorities());
+        usernamePasswordAuthenticationToken
+                .setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+        SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+    }
+
+
+    private UserDetails getUserDetails(String username) {
+        return this.userDetailService.loadUserByUsername(username);
+    }
+
+
+    private void handleExpiredToken(HttpServletRequest request, HttpServletResponse response, ExpiredJwtException exception) throws IOException {
+        if (jwtUtils.isCanRefreshToken(exception.getClaims().getExpiration())) {
+            log.info("refreshing  the token");
+            //response.sendRedirect(request.getContextPath() + "/api/user/refreshToken");
+            response.setStatus(HttpStatus.UNAUTHORIZED.value());
+            response.addHeader("refreshToken", "you need to refresh your token");
+        } else {
+            log.info("token can't be refreshed");
+            response.setStatus(HttpStatus.UNAUTHORIZED.value());
+        }
 
     }
 }
