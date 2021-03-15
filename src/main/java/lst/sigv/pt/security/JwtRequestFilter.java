@@ -51,7 +51,10 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             }
 
         } catch (ExpiredJwtException exception) {
-            handleExpiredToken(request, response, exception);
+            if (isCanIgnoreExpiredToken(request.getRequestURI(), request.getContextPath())){
+                handleExpiredToken(request, response, exception);
+            }
+
         }
 
         filterChain.doFilter(request, response);
@@ -75,13 +78,14 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     private void handleExpiredToken(HttpServletRequest request, HttpServletResponse response, ExpiredJwtException exception) throws IOException {
         if (jwtUtils.isCanRefreshToken(exception.getClaims().getExpiration())) {
             log.info("refreshing  the token");
-            //response.sendRedirect(request.getContextPath() + "/api/user/refreshToken");
-            response.setStatus(HttpStatus.UNAUTHORIZED.value());
             response.addHeader("refreshToken", "you need to refresh your token");
         } else {
             log.info("token can't be refreshed");
-            response.setStatus(HttpStatus.UNAUTHORIZED.value());
         }
+        response.setStatus(HttpStatus.UNAUTHORIZED.value());
+    }
 
+    private boolean isCanIgnoreExpiredToken(String url, String baseUrl) {
+        return url.equalsIgnoreCase(baseUrl + "/api/user/login");
     }
 }
