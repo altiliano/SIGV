@@ -49,7 +49,9 @@ public class UserController {
     private final TokenService tokenService;
     private final AuthenticationFacade authenticationFacade;
 
-    public UserController(UserService userService, UserMapper userMapper, PasswordEncoder passwordEncoder, LstUserDetailService userDetailService, AuthenticationManager authenticationManager, JwtUtils jwtUtils, EmailService emailService, TokenService tokenService, AuthenticationFacade authenticationFacade) {
+    public UserController(UserService userService, UserMapper userMapper, PasswordEncoder passwordEncoder,
+            LstUserDetailService userDetailService, AuthenticationManager authenticationManager, JwtUtils jwtUtils,
+            EmailService emailService, TokenService tokenService, AuthenticationFacade authenticationFacade) {
         this.userService = userService;
         this.userMapper = userMapper;
         this.passwordEncoder = passwordEncoder;
@@ -63,7 +65,8 @@ public class UserController {
 
     @PostMapping("/register")
     @ResponseBody
-    public RestUser registerUser(@Validated @RequestBody RestUserRegistration restUserRegistration) throws MessagingException {
+    public RestUser registerUser(@Validated @RequestBody RestUserRegistration restUserRegistration)
+            throws MessagingException {
         UserEntity userEntity = new UserEntity();
         userEntity.setFirstName(restUserRegistration.getFirstName());
         userEntity.setLastName(restUserRegistration.getLastName());
@@ -72,10 +75,8 @@ public class UserController {
         userEntity.setEmail(restUserRegistration.getEmail());
         userEntity.setPassword(passwordEncoder.encode(restUserRegistration.getPassword()));
         RestUser user = userMapper.userEntityToRestUser(userService.createUser(userEntity));
-        emailService.sendNewUserEmail(NotificationNewUserData.builder()
-                .userEmail(user.getEmail())
-                .name(user.getFirstName() + " " + user.getLastName())
-                .build());
+        emailService.sendNewUserEmail(NotificationNewUserData.builder().userEmail(user.getEmail())
+                .name(user.getFirstName() + " " + user.getLastName()).build());
         return user;
     }
 
@@ -83,9 +84,11 @@ public class UserController {
     @ResponseBody
     public RestAuthenticateResponse login(@Validated @RequestBody RestAuthenticate authenticate) {
         try {
-            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authenticate.getUsername(), authenticate.getPassword()));
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(authenticate.getUsername(), authenticate.getPassword()));
             UserDetails userDetails = userDetailService.loadUserByUsername(authenticate.getUsername());
-            return new RestAuthenticateResponse(jwtUtils.generateToken(userDetails), convertAuthoritiesToRestAuthorities(userDetails.getAuthorities()));
+            return new RestAuthenticateResponse(jwtUtils.generateToken(userDetails),
+                    convertAuthoritiesToRestAuthorities(userDetails.getAuthorities()));
         } catch (BadCredentialsException exception) {
             log.error("Can not authenticate user " + authenticate.getUsername() + " BadCredential");
             throw new BadCredentialsException("Incorrect user or password", exception);
@@ -112,9 +115,9 @@ public class UserController {
     public RestUser getUserDetail() throws UsernameNotFoundException {
         return new RestUser();
 
-        //return userMapper.userEntityToRestUser(userService.findUserByUsername(username));
+        // return
+        // userMapper.userEntityToRestUser(userService.findUserByUsername(username));
     }
-
 
     @GetMapping("/refreshToken")
     public ResponseEntity<?> refreshToken() {
@@ -122,14 +125,29 @@ public class UserController {
         return ResponseEntity.ok().body(jwtUtils.generateToken(userDetails));
     }
 
-
-    private Set<RestAuthority> convertAuthoritiesToRestAuthorities(Collection<? extends GrantedAuthority> grantedAuthorities) {
+    private Set<RestAuthority> convertAuthoritiesToRestAuthorities(
+            Collection<? extends GrantedAuthority> grantedAuthorities) {
         if (grantedAuthorities != null && grantedAuthorities.size() > 0) {
             return grantedAuthorities.stream()
                     .map(grantedAuthority -> new RestAuthority(grantedAuthority.getAuthority()))
                     .collect(Collectors.toSet());
         }
         return new HashSet<>();
+    }
+
+    @PostMapping("/changePassword")
+    public ResponseEntity<?> changePassword(@Validated @RequestBody RestChangePasswordForm passwordRecoveryForm) {
+        UserDetails userDetails = getAuthenticateUser();
+        UserEntity user = userService.findUserByEmail(userDetails.getUsername());
+        user.setPassword(passwordEncoder.encode(passwordRecoveryForm.getNewPassword()));
+        userService.saveUser(user);
+        return ResponseEntity.ok().body("Password change succesfuly");
+    }
+
+    private UserDetails getAuthenticateUser() {
+        Authentication authentication = authenticationFacade.getAuthentication();
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        return userDetails;
     }
 
 }
