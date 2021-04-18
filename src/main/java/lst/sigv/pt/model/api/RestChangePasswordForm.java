@@ -15,12 +15,11 @@ public class RestChangePasswordForm implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @NotEmpty(message = "{password.notEmpty}")
-    private String currentPassword;
-    @NotEmpty(message = "{password.notEmpty}")
+    private String userName;
     @NotEmpty(message = "{newPassword.notEmpty}")
     private String newPassword;
     @NotEmpty(message = "{confirmPassword.notEmpty}")
     private String confirmPassword;
+
 
 }

@@ -9,4 +9,5 @@ import javax.mail.MessagingException;
  */
 public interface EmailService {
    void sendNewUserEmail(NotificationNewUserData data) throws MessagingException;
+   void sendUrlToChangePassword(NotificationNewUserData data) throws MessagingException;
 }

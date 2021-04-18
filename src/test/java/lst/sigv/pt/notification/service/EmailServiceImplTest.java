@@ -29,4 +29,13 @@ class EmailServiceImplTest {
                 .url("https://springhow.com/spring-boot-email-thymeleaf/")
                 .build());
     }
+
+    @Test
+    void sendUrlToChangePassword() throws MessagingException {
+        emailService.sendUrlToChangePassword(NotificationNewUserData.builder()
+                .userEmail("a@gmail.com")
+                .name("Altiliano Fonseca")
+                .url("https://springhow.com/spring-boot-email-thymeleaf/")
+                .build());
+    }
 }
