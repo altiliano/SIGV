@@ -12,7 +12,7 @@ import java.io.Serializable;
 @Setter
 public class RestAirport implements Serializable {
 
-    private int id;
+    private String id;
 
     private String icaoCode;
 
@@ -25,4 +25,6 @@ public class RestAirport implements Serializable {
     private String latitude;
 
     private String longitude;
+
+    private String name;
 }

@@ -37,7 +37,7 @@ class AirportServiceImplTest {
         restAirport = new RestAirport();
         restAirport.setCity("Lisbon");
         restAirport.setIataCode("LP");
-        restAirport.setId(1);
+        restAirport.setId("1");
         restAirport.setCountry("Portugal");
 
         airportEntity = new AirportEntity();

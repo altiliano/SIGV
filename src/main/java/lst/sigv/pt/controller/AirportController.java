@@ -5,14 +5,16 @@ import lst.sigv.pt.model.api.RestAirport;
 import lst.sigv.pt.service.AirportService;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
  * Created by Afonseca on 13/02/21
  */
 @RestController
+@RequestMapping("/api/airport")
 @Slf4j
-@RequestMapping("/api/airport/")
 public class AirportController {
 
     private final AirportService airportService;
@@ -27,10 +29,10 @@ public class AirportController {
         return airportService.getAirports();
     }
 
-    @PostMapping("add")
+    @PostMapping("/addAirport")
     @ResponseBody
     public RestAirport addAirport(@RequestBody RestAirport airport) {
-        return airportService.editAirport(airport);
+        return airportService.addAirport(airport);
     }
 
     @PutMapping("edit")
@@ -43,5 +45,7 @@ public class AirportController {
     public void deleteAirport(@RequestBody RestAirport airport) {
         airportService.deleteAirport(airport);
     }
+
+
 
 }
