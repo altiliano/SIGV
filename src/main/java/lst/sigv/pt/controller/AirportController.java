@@ -13,7 +13,7 @@ import java.util.List;
  * Created by Afonseca on 13/02/21
  */
 @RestController
-@RequestMapping("/api/airport")
+@RequestMapping("/api/airport/")
 @Slf4j
 public class AirportController {
 
@@ -29,7 +29,7 @@ public class AirportController {
         return airportService.getAirports();
     }
 
-    @PostMapping("/addAirport")
+    @PostMapping("create")
     @ResponseBody
     public RestAirport addAirport(@RequestBody RestAirport airport) {
         return airportService.addAirport(airport);
