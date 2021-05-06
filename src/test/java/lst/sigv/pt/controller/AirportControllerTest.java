@@ -58,7 +58,7 @@ public class AirportControllerTest {
     void addAirport() throws Exception {
         RestAirport restAirport = getRestAirport();
         when(airportService.addAirport(any(RestAirport.class))).thenReturn(restAirport);
-        mockMvc.perform(post("/api/airport/createAirport")
+        mockMvc.perform(post("/api/airport/create")
                 .content(airportForm)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
