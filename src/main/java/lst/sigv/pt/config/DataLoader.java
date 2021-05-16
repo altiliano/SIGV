@@ -2,13 +2,11 @@ package lst.sigv.pt.config;
 
 import lombok.extern.slf4j.Slf4j;
 import lst.sigv.pt.model.*;
+import lst.sigv.pt.model.api.RestAirport;
 import lst.sigv.pt.model.api.RestAuthority;
 import lst.sigv.pt.model.api.RestRoute;
 import lst.sigv.pt.model.api.RestUser;
-import lst.sigv.pt.service.AuthorityManagementService;
-import lst.sigv.pt.service.PlaneService;
-import lst.sigv.pt.service.RouteService;
-import lst.sigv.pt.service.UserService;
+import lst.sigv.pt.service.*;
 import lst.sigv.pt.service.mapper.PlaneMapper;
 import lst.sigv.pt.service.mapper.UserMapper;
 import org.springframework.boot.CommandLineRunner;
@@ -32,8 +30,9 @@ public class DataLoader implements CommandLineRunner {
     private final UserMapper userMapper;
     private final PlaneMapper planeMapper;
     private final PasswordEncoder passwordEncoder;
+    private final AirportService airportService;
 
-    public DataLoader(AuthorityManagementService authorityManagementService, UserService userService, PlaneService planeService, RouteService routeService, UserMapper userMapper, PlaneMapper planeMapper, PasswordEncoder passwordEncoder) {
+    public DataLoader(AuthorityManagementService authorityManagementService, UserService userService, PlaneService planeService, RouteService routeService, UserMapper userMapper, PlaneMapper planeMapper, PasswordEncoder passwordEncoder, AirportService airportService) {
         this.authorityManagementService = authorityManagementService;
         this.userService = userService;
         this.planeService = planeService;
@@ -41,12 +40,14 @@ public class DataLoader implements CommandLineRunner {
         this.userMapper = userMapper;
         this.planeMapper = planeMapper;
         this.passwordEncoder = passwordEncoder;
+        this.airportService = airportService;
     }
 
     @Override
     public void run(String... args) throws Exception {
         createAuthority();
         createUser();
+        createAirports();
         createPlane();
         createRoute();
 
@@ -115,5 +116,27 @@ public class DataLoader implements CommandLineRunner {
         }
         routeService.createRoute(route);
         log.info("------------------------------------------------Saving route ------------------------------------------------------");
+    }
+
+    private void createAirports() {
+        RestAirport lppt = RestAirport.builder().city("Lisbon")
+                            .country("Portugal")
+                            .iataCode("LIS")
+                            .icaoCode("LPPT")
+                            .latitude("38.7813")
+                            .name("Humberto Delgado")
+                            .longitude("-9.13592")
+                .build();
+
+        RestAirport lppr = RestAirport.builder().city("Porto")
+                .country("Portugal")
+                .iataCode("POR")
+                .icaoCode("LPPR")
+                .latitude("38.7813")
+                .name("Francisco Sá Carneiro")
+                .longitude("-9.13592")
+                .build();
+        airportService.addAirport(lppt);
+        airportService.addAirport(lppr);
     }
 }

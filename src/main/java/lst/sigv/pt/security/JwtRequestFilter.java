@@ -31,33 +31,29 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        String extractedToken = jwtUtils.extractToken(request);
+        if (extractedToken != null) {
+            handleRequestWithToken(extractedToken, request, response);
+        }
+        filterChain.doFilter(request, response);
 
-        String username = null;
-        String jwt = null;
+    }
+
+    private void handleRequestWithToken(String token, HttpServletRequest request, HttpServletResponse response) throws IOException {
         try {
-            jwt = jwtUtils.extractToken(request);
-            if (jwt != null) {
-                username = jwtUtils.extractUsername(jwt);
-            }
-
+            String username = jwtUtils.extractUsername(token);
             if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-
                 UserDetails userDetails = getUserDetails(username);
-
-                if (jwtUtils.validateToken(jwt, userDetails)) {
-
+                if (jwtUtils.validateToken(token, userDetails)) {
                     createUsernamePasswordAuthenticationToken(request, userDetails);
                 }
             }
-
         } catch (ExpiredJwtException exception) {
-            if (isCanIgnoreExpiredToken(request.getRequestURI(), request.getContextPath())){
+            if (!isCanIgnoreExpiredToken(request.getRequestURI(), request.getContextPath())) {
                 handleExpiredToken(request, response, exception);
             }
 
         }
-
-        filterChain.doFilter(request, response);
 
     }
 
@@ -82,10 +78,14 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         } else {
             log.info("token can't be refreshed");
         }
+
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
+
     }
 
     private boolean isCanIgnoreExpiredToken(String url, String baseUrl) {
-        return url.equalsIgnoreCase(baseUrl + "/api/user/login");
+        return url.equalsIgnoreCase(baseUrl + "/api/user/login") || url.equalsIgnoreCase(baseUrl + "/api/user/refreshToken");
     }
+
+
 }

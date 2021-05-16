@@ -32,4 +32,6 @@ public class AirportEntity {
 
     private String longitude;
 
+    private String name;
+
 }

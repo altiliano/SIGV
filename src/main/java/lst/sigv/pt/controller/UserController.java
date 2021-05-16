@@ -186,8 +186,12 @@ public class UserController {
 
     private UserDetails getAuthenticateUser() {
         Authentication authentication = authenticationFacade.getAuthentication();
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        return userDetails;
+       try {
+           return  (UserDetails) authentication.getPrincipal();
+        }catch (ClassCastException classCastException) {
+           log.error(classCastException.getMessage());
+       }
+        return null;
     }
 
 }
