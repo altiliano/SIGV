@@ -1,10 +1,10 @@
 package lst.sigv.pt.controller;
 
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import lst.sigv.pt.model.api.RestRoute;
 import lst.sigv.pt.model.api.RestRouteForm;
 import lst.sigv.pt.service.RouteService;
-import lst.sigv.pt.service.mapper.RouteMapper;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,21 +18,20 @@ import java.util.List;
 @Slf4j
 public class RouteController {
     private final RouteService routeService;
-    private final RouteMapper routeMapper;
 
-    public RouteController(RouteService routeService, RouteMapper routeMapper) {
+    public RouteController(RouteService routeService) {
         this.routeService = routeService;
-        this.routeMapper = routeMapper;
     }
 
     @PostMapping("create")
     @ResponseBody
+    @ApiOperation("Create new route")
     public RestRoute createRoute(@RequestBody @Validated RestRouteForm form) {
-        RestRoute restRoute = routeMapper.restRouteFormToRestRoute(form);
-        return routeService.createRoute(restRoute);
+        return routeService.createRoute(form);
     }
 
     @PostMapping("update")
+    @ApiOperation("Update Route")
     public RestRoute updateRoute(@RequestBody RestRoute route)  {
        return routeService.updateRoute(route);
     }
@@ -42,20 +41,20 @@ public class RouteController {
         return routeService.getAllActiveRoute();
     }
 
-    @PostMapping("delete")
-    public void deleteRoute(@RequestBody String routeId)  {
+    @PostMapping("delete/{routeId}")
+    public void deleteRoute(@PathVariable("routeId") String routeId)  {
         routeService.deleteRoute(routeId);
     }
 
-    @PostMapping("active")
+    @PostMapping("active/{routeId}")
     @ResponseBody
-    public RestRoute activeRoute(@RequestBody String routeId)  {
+    public RestRoute activeRoute(@PathVariable("routeId") String routeId)  {
         return routeService.activeRoute(routeId);
     }
 
-    @PostMapping("inactive")
+    @PostMapping("inactive/{routeId}")
     @ResponseBody
-    public RestRoute inactiveRoute(@RequestBody  String routeId)  {
+    public RestRoute inactiveRoute(@PathVariable("routeId")  String routeId)  {
         return routeService.inactiveRoute(routeId);
     }
 

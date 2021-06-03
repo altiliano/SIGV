@@ -1,5 +1,6 @@
 package lst.sigv.pt.service.mapper;
 
+import lst.sigv.pt.model.AirportEntity;
 import lst.sigv.pt.model.PlaneEntity;
 import lst.sigv.pt.model.PlaneStatus;
 import lst.sigv.pt.model.RouteEntity;
@@ -19,26 +20,30 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 class RouteMapperImplTest {
     private RouteMapper routeMapper;
+    private AirportMapper airportMapper;
 
     @BeforeEach
     void setUp() {
         routeMapper = new RouteMapperImpl();
+        airportMapper = new AirportMapperImpl();
     }
+
     @Test
     void routeEntityToRestRoute() {
         RouteEntity routeEntity = getRouteEntity();
         RestRoute restRoute = routeMapper.routeEntityToRestRoute(routeEntity);
         Assertions.assertEquals(restRoute.getDepart(), routeEntity.getDepart());
-        Assertions.assertEquals(restRoute.getDestination(), routeEntity.getDestination());
+        Assertions.assertEquals(restRoute.getDestinations().size(), routeEntity.getDestinations().size());
         Assertions.assertEquals(restRoute.getId(), routeEntity.getId());
         Assertions.assertEquals(restRoute.getPlanes().size(), routeEntity.getPlanes().size());
     }
+
     @Test
     void restRouteToRouteEntity() {
         RestRoute restRoute = getRestRoute();
         RouteEntity routeEntity = routeMapper.restRouteToRouteEntity(restRoute);
         Assertions.assertEquals(restRoute.getDepart(), routeEntity.getDepart());
-        Assertions.assertEquals(restRoute.getDestination(), routeEntity.getDestination());
+        Assertions.assertEquals(restRoute.getDestinations().size(), routeEntity.getDestinations().size());
         Assertions.assertEquals(restRoute.getId(), routeEntity.getId());
         Assertions.assertEquals(restRoute.getPlanes().size(), routeEntity.getPlanes().size());
 
@@ -47,10 +52,27 @@ class RouteMapperImplTest {
     RouteEntity getRouteEntity() {
         RouteEntity routeEntity = new RouteEntity();
         routeEntity.setId(1L);
-        routeEntity.setDestination("LPPT");
-        routeEntity.setDepart("GVNP");
+        routeEntity.getDestinations().add(getAirport());
+
+        routeEntity.setDepart(getAirport());
         routeEntity.setPlanes(getAvailablePlane());
         return routeEntity;
+    }
+
+    AirportEntity getAirport() {
+
+        AirportEntity airportEntity = new AirportEntity();
+        airportEntity.setId(1L);
+        airportEntity.setName("Nelson Mandela");
+        airportEntity.setCity("Praia");
+        airportEntity.setCountry("Cape Verde");
+        airportEntity.setIataCode("GVNP");
+        airportEntity.setIcaoCode("GVNP");
+        airportEntity.setLongitude("11111111");
+        airportEntity.setLatitude("22222222");
+
+        return airportEntity;
+
     }
 
     private Set<PlaneEntity> getAvailablePlane() {
@@ -69,8 +91,8 @@ class RouteMapperImplTest {
     RestRoute getRestRoute() {
         RestRoute restRoute = new RestRoute();
         restRoute.setId(1L);
-        restRoute.setDestination("LPPT");
-        restRoute.setDepart("GVNP");
+        restRoute.getDestinations().add(airportMapper.airportEntityToRestAirport(getAirport()));
+        restRoute.setDepart(airportMapper.airportEntityToRestAirport(getAirport()));
         restRoute.setPlanes(getAvailableRestPlane());
         return restRoute;
     }

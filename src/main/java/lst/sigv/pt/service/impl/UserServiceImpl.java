@@ -22,7 +22,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserEntity findUserByUsername(String username) {
-        return userRepository.findByUsername(username).orElse(null);
+        UserEntity user = userRepository.findByUsername(username).orElse(null);
+        if (user == null) {
+            throw new UserNotFoundException("user with username:  " + username + " not found");
+        }
+        return user;
     }
 
     @Override

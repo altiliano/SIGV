@@ -4,6 +4,7 @@ import lst.sigv.pt.exception.InvalidRouteStatusException;
 import lst.sigv.pt.model.RouteEntity;
 import lst.sigv.pt.model.RouteStatus;
 import lst.sigv.pt.model.api.RestRoute;
+import lst.sigv.pt.model.api.RestRouteForm;
 import lst.sigv.pt.repository.RouteRepository;
 import lst.sigv.pt.service.RouteService;
 import lst.sigv.pt.service.mapper.RouteMapper;
@@ -26,7 +27,8 @@ public class RouteServiceImpl implements RouteService {
     }
 
     @Override
-    public RestRoute createRoute(RestRoute route) {
+    public RestRoute createRoute(RestRouteForm form) {
+        RestRoute route = routeMapper.restRouteFormToRestRoute(form);
         return saveRoute(routeMapper.restRouteToRouteEntity(route));
     }
 

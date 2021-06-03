@@ -83,8 +83,8 @@ class PlaneMapperImplTest {
     Set<RouteEntity> getRoutes() {
         Set<RouteEntity> routeEntities = new HashSet<>();
         RouteEntity routeEntity = new RouteEntity();
-        routeEntity.setDepart("LPPT");
-        routeEntity.setDestination("LPPR");
+        //routeEntity.setDepart("LPPT");
+        //routeEntity.setDestination("LPPR");
         routeEntity.setId(1L);
         routeEntities.add(routeEntity);
         return routeEntities;
@@ -100,8 +100,8 @@ class PlaneMapperImplTest {
     Set<RestRoute> getRestRoutes() {
         Set<RestRoute> routes = new HashSet<>();
         RestRoute route = new RestRoute();
-        route.setDepart("LPPT");
-        route.setDestination("LPPR");
+        //route.setDepart("LPPT");
+        //route.setDestination("LPPR");
         route.setId(1L);
         routes.add(route);
         return routes;

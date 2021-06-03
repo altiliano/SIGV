@@ -4,6 +4,8 @@ import lst.sigv.pt.exception.PlaneAlreadyExistException;
 import lst.sigv.pt.model.PlaneEntity;
 import lst.sigv.pt.model.PlaneStatus;
 
+import java.util.List;
+
 /**
  * Created by Afonseca on 17/11/20
  */
@@ -19,5 +21,5 @@ public interface PlaneService {
 
     PlaneEntity findPlaneById(Long planeId);
 
-    Iterable<PlaneEntity> getAllActivePlane();
+    List<PlaneEntity> getAllActivePlane();
 }

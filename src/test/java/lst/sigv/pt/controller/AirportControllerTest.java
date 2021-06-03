@@ -5,11 +5,11 @@ import lst.sigv.pt.model.api.RestAirport;
 import lst.sigv.pt.service.AirportService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -22,7 +22,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class AirportControllerTest {
     @InjectMocks
     private AirportController airportController;
@@ -55,9 +55,9 @@ public class AirportControllerTest {
     }
 
     @Test
-    void addAirport() throws Exception {
+   public void addAirport() throws Exception {
         RestAirport restAirport = getRestAirport();
-        when(airportService.addAirport(any(RestAirport.class))).thenReturn(restAirport);
+        when(airportController.addAirport(any(RestAirport.class))).thenReturn(restAirport);
         mockMvc.perform(post("/api/airport/create")
                 .content(airportForm)
                 .contentType(MediaType.APPLICATION_JSON))
@@ -69,9 +69,9 @@ public class AirportControllerTest {
     }
 
     @Test
-    void editAirport() throws Exception {
+    public  void editAirport() throws Exception {
         RestAirport restAirport = getRestAirport();
-        when(airportService.editAirport(any(RestAirport.class))).thenReturn(restAirport);
+        when(airportController.editAirport(any(RestAirport.class))).thenReturn(restAirport);
         mockMvc.perform(put("/api/airport/edit")
                 .content(airportForm)
                 .contentType(MediaType.APPLICATION_JSON))
@@ -84,9 +84,8 @@ public class AirportControllerTest {
     }
 
     @Test
-    void deleteAirport() throws Exception {
-        mockMvc.perform(post("/api/airport/delete")
-                .content(airportForm)
+    public void deleteAirport() throws Exception {
+        mockMvc.perform(post("/api/airport/delete/111111")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }

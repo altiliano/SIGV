@@ -16,8 +16,12 @@ public class RouteEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    private String depart;
-    private String destination;
+    @OneToOne
+    private AirportEntity depart;
+    @OneToMany(cascade = CascadeType.MERGE)
+    @JoinTable( name = "route_destinations", joinColumns =  { @JoinColumn(name = "route_id", referencedColumnName = "id")},
+            inverseJoinColumns = {@JoinColumn( name = "airport_id", referencedColumnName = "id")})
+    private Set<AirportEntity> destinations;
     private RouteStatus status;
     @ManyToMany( cascade = CascadeType.MERGE)
     @JoinTable(name = "route_planes", joinColumns = {@JoinColumn(name = "route_id", referencedColumnName = "id")},

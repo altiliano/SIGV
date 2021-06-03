@@ -1,18 +1,20 @@
 package lst.sigv.pt.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lst.sigv.pt.model.PlaneStatus;
 import lst.sigv.pt.model.RouteStatus;
+import lst.sigv.pt.model.api.RestAirport;
 import lst.sigv.pt.model.api.RestPlane;
 import lst.sigv.pt.model.api.RestRoute;
 import lst.sigv.pt.model.api.RestRouteForm;
 import lst.sigv.pt.service.RouteService;
-import lst.sigv.pt.service.mapper.RouteMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -22,6 +24,7 @@ import java.util.Set;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -30,35 +33,50 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /**
  * Created by Afonseca on 23/11/20
  */
+@ExtendWith(MockitoExtension.class)
 class RouteControllerTest {
     @InjectMocks
     private RouteController controller;
+
     @Mock
-    private RouteService routeService;
-    @Mock
-    private RouteMapper routeMapper;
+    private  RouteService routeService;
 
     private MockMvc mockMvc;
 
+    private  final String routeId ="1";
+
     private static final String routeForm = "{\n" +
-            "    \"depart\": \"LPPT\",\n" +
-            "    \"destination\": \"GVNP\",\n" +
-            "    \"planes\": [\n" +
-            "        {\n" +
-            "            \"name\": \"Rui Gome\",\n" +
-            "            \"registration\": \"CS-CST\",\n" +
-            "            \"photoUrl\": \"https://www.texasstandard.org/wp-content/uploads/2018/04/33491246922_bbabff8c4f_k.jpg\",\n" +
-            "            \"textureUrl\": \"https://www.texasstandard.org/wp-content/uploads/2018/04/33491246922_bbabff8c4f_k.jpg\",\n" +
-            "            \"aircraftType\": \"B737-800\"\n" +
-            "        },\n" +
-            "          {\n" +
-            "            \"name\": \"Rui Gome\",\n" +
-            "            \"registration\": \"CS-TST\",\n" +
-            "            \"photoUrl\": \"https://www.texasstandard.org/wp-content/uploads/2018/04/33491246922_bbabff8c4f_k.jpg\",\n" +
-            "            \"textureUrl\": \"https://www.texasstandard.org/wp-content/uploads/2018/04/33491246922_bbabff8c4f_k.jpg\",\n" +
-            "            \"aircraftType\": \"B757-200\"\n" +
-            "        }\n" +
-            "    ]\n" +
+            "  \"depart\": {\n" +
+            "    \"city\": \"Lisbon\",\n" +
+            "    \"country\": \"Portugal\",\n" +
+            "    \"iataCode\": \"LPPT\",\n" +
+            "    \"icaoCode\": \"LPPT\",\n" +
+            "    \"id\": \"1\",\n" +
+            "    \"latitude\": \"1111\",\n" +
+            "    \"longitude\": \"2222\",\n" +
+            "    \"name\": \"teste name\"\n" +
+            "  },\n" +
+            "  \"destination\": {\n" +
+            "    \"city\": \"Praia\",\n" +
+            "    \"country\": \"Cape Verde\",\n" +
+            "    \"iataCode\": \"GVNP\",\n" +
+            "    \"icaoCode\": \"GVNP\",\n" +
+            "    \"id\": \"2\",\n" +
+            "    \"latitude\": \"111111\",\n" +
+            "    \"longitude\": \"22222\",\n" +
+            "    \"name\": \"Nelson Mandela\"\n" +
+            "  },\n" +
+            "  \"planes\": [\n" +
+            "    {\n" +
+            "      \"aircraftType\": \"B738\",\n" +
+            "      \"id\": 44,\n" +
+            "      \"name\": \"Teste\",\n" +
+            "      \"photoUrl\": \"wwwww\",\n" +
+            "      \"registration\": \"cccc\",\n" +
+            "      \"status\": \"ACTIVE\",\n" +
+            "      \"textureUrl\": \"wwwww\"\n" +
+            "    }\n" +
+            "  ]\n" +
             "}";
 
 
@@ -68,39 +86,34 @@ class RouteControllerTest {
         mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
     }
 
+
     @Test
     void createRoute() throws Exception {
         RestRoute restRoute = getRoute();
-        ObjectMapper objectMapper = new ObjectMapper();
-        RestRouteForm restRouteForm = objectMapper.readValue(routeForm, RestRouteForm.class);
-
-        when(routeMapper.restRouteFormToRestRoute(restRouteForm)).thenReturn(restRoute);
-        when(routeService.createRoute(restRoute)).thenReturn(restRoute);
-
+        Mockito.when(controller.createRoute(any(RestRouteForm.class))).thenReturn(restRoute);
         mockMvc.perform(post("/api/route/create")
                 .content(routeForm)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.depart", is(restRoute.getDepart())))
-                .andExpect(jsonPath("$.destination", is(restRoute.getDestination())))
+                .andExpect(jsonPath("$.depart.icaoCode", is(restRoute.getDepart().getIcaoCode())))
+                .andExpect(jsonPath("$.destinations", hasSize(1)))
                 .andExpect(jsonPath("$.id", is(1)))
                 .andExpect(jsonPath("$.planes", hasSize(2)));
     }
 
     @Test
     void updateRoute() throws Exception {
-        ObjectMapper objectMapper = new ObjectMapper();
-        RestRoute restRoute = objectMapper.readValue(routeForm, RestRoute.class);
-        when(routeService.updateRoute(restRoute)).thenReturn(restRoute);
+        RestRoute restRoute = getRoute();
+        Mockito.when(controller.updateRoute(any(RestRoute.class))).thenReturn(restRoute);
 
         mockMvc.perform(post("/api/route/update")
                 .content(routeForm)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.depart", is(restRoute.getDepart())))
-                .andExpect(jsonPath("$.destination", is(restRoute.getDestination())))
-                .andExpect(jsonPath("$.id", is(0)))
-                .andExpect(jsonPath("$.planes", hasSize(2)));
+                .andExpect(jsonPath("$.depart.icaoCode", is(restRoute.getDepart().getIcaoCode())))
+                .andExpect(jsonPath("$.destinations", hasSize(restRoute.getDestinations().size())))
+                .andExpect(jsonPath("$.id", is(1)))
+                .andExpect(jsonPath("$.planes", hasSize(restRoute.getPlanes().size())));
     }
 
     @Test
@@ -109,8 +122,7 @@ class RouteControllerTest {
 
     @Test
     void deleteRoute() throws Exception {
-        mockMvc.perform(post("/api/route/delete")
-                .content("1")
+        mockMvc.perform(post("/api/route/delete/"+routeId)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
@@ -119,14 +131,13 @@ class RouteControllerTest {
     void activeRoute() throws Exception {
         RestRoute restRoute = getRoute();
         restRoute.setStatus(RouteStatus.ACTIVE);
-        when(routeService.activeRoute("1")).thenReturn(restRoute);
+        when(controller.activeRoute(routeId)).thenReturn(restRoute);
 
-        mockMvc.perform(post("/api/route/active")
-                .content("1")
+        mockMvc.perform(post("/api/route/active/" + routeId)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.depart", is(restRoute.getDepart())))
-                .andExpect(jsonPath("$.destination", is(restRoute.getDestination())))
+                .andExpect(jsonPath("$.depart.icaoCode", is(restRoute.getDepart().getIcaoCode())))
+                .andExpect(jsonPath("$.destinations", hasSize(1)))
                 .andExpect(jsonPath("$.id", is(1)))
                 .andExpect(jsonPath("$.status", is(restRoute.getStatus().toString())))
                 .andExpect(jsonPath("$.planes", hasSize(2)));
@@ -136,14 +147,13 @@ class RouteControllerTest {
     void inactiveRoute() throws Exception {
         RestRoute restRoute = getRoute();
         restRoute.setStatus(RouteStatus.INACTIVE);
-        when(routeService.inactiveRoute("1")).thenReturn(restRoute);
+        when(controller.inactiveRoute(routeId)).thenReturn(restRoute);
 
-        mockMvc.perform(post("/api/route/inactive")
-                .content("1")
+        mockMvc.perform(post("/api/route/inactive/"+routeId)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.depart", is(restRoute.getDepart())))
-                .andExpect(jsonPath("$.destination", is(restRoute.getDestination())))
+                .andExpect(jsonPath("$.depart.icaoCode", is(restRoute.getDepart().getIcaoCode())))
+                .andExpect(jsonPath("$.destinations", hasSize(1)))
                 .andExpect(jsonPath("$.id", is(1)))
                 .andExpect(jsonPath("$.status", is(restRoute.getStatus().toString())))
                 .andExpect(jsonPath("$.planes", hasSize(2)));
@@ -152,11 +162,35 @@ class RouteControllerTest {
     private RestRoute getRoute() {
         RestRoute route = new RestRoute();
         route.setStatus(RouteStatus.INACTIVE);
-        route.setDepart("LPPT");
-        route.setDestination("GVNP");
+        route.setDepart(getDepartAirport());
+        route.getDestinations().add(getDepartAirport());
         route.setId(1L);
         route.setPlanes(getPlanes());
         return route;
+    }
+
+    private RestAirport getDepartAirport() {
+       return RestAirport.builder()
+               .city("Praia")
+               .country("Cape Verde")
+               .iataCode("GVNP")
+               .icaoCode("GVNP")
+               .latitude("11111111")
+               .longitude("2222222")
+               .build();
+
+    }
+
+    private RestAirport getDestinationAirport() {
+        return RestAirport.builder()
+                .city("Lisbon")
+                .country("Portugal")
+                .iataCode("LPPT")
+                .icaoCode("LPPT")
+                .latitude("11111111")
+                .longitude("2222222")
+                .build();
+
     }
 
     private Set<RestPlane> getPlanes() {
@@ -178,7 +212,6 @@ class RouteControllerTest {
         plane2.setPhotoUrl("https://www.texasstandard.org/wp-content/uploads/2018/04/33491246922_bbabff8c4f_k.jpg");
         plane2.setId(2L);
         plane2.setAircraftType("B757-200");
-
 
         planes.add(plane2);
         planes.add(plane1);

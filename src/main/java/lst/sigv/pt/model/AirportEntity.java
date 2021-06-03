@@ -3,10 +3,9 @@ package lst.sigv.pt.model;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created by Afonseca on 12/02/21
@@ -33,5 +32,8 @@ public class AirportEntity {
     private String longitude;
 
     private String name;
+
+    @OneToMany
+    private Set<RouteEntity> routes = new HashSet<>();
 
 }

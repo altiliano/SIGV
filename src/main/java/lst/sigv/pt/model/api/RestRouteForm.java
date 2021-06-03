@@ -10,7 +10,7 @@ import java.util.Set;
  **/
 @Data
 public class RestRouteForm implements Serializable {
-    private String depart;
-    private String destination;
+    private RestAirport depart;
+    private RestAirport destination;
     private Set<RestPlane> planes;
 }

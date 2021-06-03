@@ -53,7 +53,6 @@ class PlaneControllerTest {
     void setUp() {
         MockitoAnnotations.openMocks(this);
         mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
-
     }
 
     @Test

@@ -9,6 +9,8 @@ import lst.sigv.pt.repository.PlaneRepository;
 import lst.sigv.pt.service.PlaneService;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -66,7 +68,9 @@ public class PlaneServiceImpl implements PlaneService {
     }
 
     @Override
-    public Iterable<PlaneEntity> getAllActivePlane() {
-        return planeRepository.findAll();
+    public List<PlaneEntity> getAllActivePlane() {
+        List<PlaneEntity> planes = new ArrayList<>();
+        planeRepository.findAll().forEach(planes::add);
+        return planes;
     }
 }

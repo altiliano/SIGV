@@ -9,4 +9,5 @@ import org.springframework.data.repository.CrudRepository;
 public interface AirportRepository extends CrudRepository<AirportEntity, Long> {
 
     AirportEntity findByIcaoCode(String icaoCode);
+    AirportEntity findAirportEntityById(long id);
 }

@@ -13,7 +13,9 @@ public interface AirportService {
     RestAirport addAirport(RestAirport airport);
     RestAirport editAirport(RestAirport airport);
     List<RestAirport> getAirports();
-    void  deleteAirport(RestAirport airport);
+    void  deleteAirport(String id);
+    RestAirport findAirportById(String id);
+
 
 
 }

@@ -5,8 +5,6 @@ import lst.sigv.pt.model.api.RestAirport;
 import lst.sigv.pt.service.AirportService;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -41,9 +39,9 @@ public class AirportController {
         return airportService.editAirport(airport);
     }
 
-    @PostMapping("delete")
-    public void deleteAirport(@RequestBody RestAirport airport) {
-        airportService.deleteAirport(airport);
+    @PostMapping("delete/{id}")
+    public void deleteAirport(@PathVariable("id") String id) {
+        airportService.deleteAirport(id);
     }
 
 

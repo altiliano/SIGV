@@ -49,8 +49,13 @@ public class AirportServiceImpl implements AirportService {
     }
 
     @Override
-    public void deleteAirport(RestAirport airport) {
-        airportRepository.delete(airportMapper.restAirportToAirportEntity(airport));
+    public void deleteAirport(String id) {
+        airportRepository.deleteById(Long.parseLong(id));
+    }
+
+    @Override
+    public RestAirport findAirportById(String id) {
+        return airportMapper.airportEntityToRestAirport(airportRepository.findAirportEntityById(Long.parseLong(id)));
     }
 
 

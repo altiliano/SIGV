@@ -1,10 +1,14 @@
 package lst.sigv.pt.config;
 
 import lombok.extern.slf4j.Slf4j;
-import lst.sigv.pt.model.*;
+import lst.sigv.pt.exception.PlaneAlreadyExistException;
+import lst.sigv.pt.exception.UserNotFoundException;
+import lst.sigv.pt.model.PlaneEntity;
+import lst.sigv.pt.model.PlaneStatus;
+import lst.sigv.pt.model.UserEntity;
+import lst.sigv.pt.model.UserStatus;
 import lst.sigv.pt.model.api.RestAirport;
 import lst.sigv.pt.model.api.RestAuthority;
-import lst.sigv.pt.model.api.RestRoute;
 import lst.sigv.pt.model.api.RestUser;
 import lst.sigv.pt.service.*;
 import lst.sigv.pt.service.mapper.PlaneMapper;
@@ -14,7 +18,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -44,12 +47,12 @@ public class DataLoader implements CommandLineRunner {
     }
 
     @Override
-    public void run(String... args) throws Exception {
+    public void run(String... args) {
         createAuthority();
         createUser();
         createAirports();
         createPlane();
-        createRoute();
+        //createRoute();
 
     }
 
@@ -66,45 +69,57 @@ public class DataLoader implements CommandLineRunner {
     }
 
     private void createUser() {
-        if (userService.findUserByUsername("admin@gmial.com") == null) {
+        String username = "admin@gmail.com";
+        try {
+            userService.findUserByUsername(username);
+        } catch (UserNotFoundException ex) {
+            log.info("Creating new user");
             UserEntity user = new UserEntity();
-            user.setEmail("admin@gmail.com");
-            user.setUsername("admin@gmail.com");
+            user.setEmail(username);
+            user.setUsername(username);
             user.setFirstName("admin");
             user.setPassword(passwordEncoder.encode("admin"));
             user.setStatus(UserStatus.ACTIVE);
             user.setLastName("admin");
-            userService.saveUser(user);
             RestUser restUser = userMapper.userEntityToRestUser(user);
             authorityManagementService.associateAuthority(restUser, RestAuthority.builder().role("ADMIN").build());
             log.info("------------------------------------------------Saving user admin ------------------------------------------------------");
+            userService.createUser(user);
         }
     }
 
     private void createPlane() {
-        PlaneEntity bessa = new PlaneEntity();
-        bessa.setName("Agustina Bessa Luis");
-        bessa.setAircraftType("A320");
-        bessa.setRegistration("CS-TVB");
-        bessa.setStatus(PlaneStatus.ACTIVE);
-        bessa.setPhotoUrl("https://www.jetphotos.com/photo/10012775");
-        bessa.setTextureUrl("https://www.jetphotos.com/photo/10012775");
+        if (planeService.getAllActivePlane().size() == 0) {
+            PlaneEntity bessa = new PlaneEntity();
+            bessa.setName("Agustina Bessa Luis");
+            bessa.setAircraftType("A320");
+            bessa.setRegistration("CS-TVB");
+            bessa.setStatus(PlaneStatus.ACTIVE);
+            bessa.setPhotoUrl("https://www.jetphotos.com/photo/10012775");
+            bessa.setTextureUrl("https://www.jetphotos.com/photo/10012775");
 
-        PlaneEntity luis = new PlaneEntity();
-        luis.setName("Agustina Bessa Luis");
-        luis.setStatus(PlaneStatus.ACTIVE);
-        luis.setAircraftType("A320");
-        luis.setRegistration("CS-TVV");
-        luis.setPhotoUrl("https://www.jetphotos.com/photo/10012775");
-        luis.setTextureUrl("https://www.jetphotos.com/photo/10012775");
-        planeService.createPlane(bessa);
-        planeService.createPlane(luis);
-        log.info("------------------------------------------------Saving plane ------------------------------------------------------");
+            PlaneEntity luis = new PlaneEntity();
+            luis.setName("Agustina Bessa Luis");
+            luis.setStatus(PlaneStatus.ACTIVE);
+            luis.setAircraftType("A320");
+            luis.setRegistration("CS-TVV");
+            luis.setPhotoUrl("https://www.jetphotos.com/photo/10012775");
+            luis.setTextureUrl("https://www.jetphotos.com/photo/10012775");
+            try {
+                planeService.createPlane(bessa);
+                planeService.createPlane(luis);
+                log.info("------------------------------------------------Saving plane ------------------------------------------------------");
+            } catch (PlaneAlreadyExistException exception) {
+                log.info(exception.getMessage());
+            }
+
+        }
     }
 
-    private void createRoute() {
+ /*   private void createRoute() {
         Iterable<PlaneEntity> planeEntities = planeService.getAllActivePlane();
         RestRoute route = new RestRoute();
+
         route.setDepart("LPPT");
         route.setDestination("GVNP");
         route.setStatus(RouteStatus.ACTIVE);
@@ -116,7 +131,7 @@ public class DataLoader implements CommandLineRunner {
         }
         routeService.createRoute(route);
         log.info("------------------------------------------------Saving route ------------------------------------------------------");
-    }
+    }*/
 
     private void createAirports() {
         RestAirport lppt = RestAirport.builder().city("Lisbon")
@@ -136,7 +151,20 @@ public class DataLoader implements CommandLineRunner {
                 .name("Francisco Sá Carneiro")
                 .longitude("-9.13592")
                 .build();
-        airportService.addAirport(lppt);
-        airportService.addAirport(lppr);
+
+        RestAirport gvnp = RestAirport.builder().city("Praia")
+                .country("Cape Verd")
+                .iataCode("CAV")
+                .icaoCode("GVNP")
+                .latitude("38.7813")
+                .name("Nelson Mandela")
+                .longitude("-9.13592")
+                .build();
+        if (airportService.getAirports().size() == 0) {
+            airportService.addAirport(lppt);
+            airportService.addAirport(lppr);
+            airportService.addAirport(gvnp);
+        }
+
     }
 }
