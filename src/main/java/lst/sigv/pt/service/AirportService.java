@@ -1,9 +1,8 @@
 package lst.sigv.pt.service;
 
-import lst.sigv.pt.model.AirportEntity;
 import lst.sigv.pt.model.api.RestAirport;
-
-import java.util.List;
+import lst.sigv.pt.model.api.RestPageResult;
+import lst.sigv.pt.model.api.RestPageRequest;
 
 /**
  * Created by Afonseca on 12/02/21
@@ -11,8 +10,8 @@ import java.util.List;
 public interface AirportService {
 
     RestAirport addAirport(RestAirport airport);
-    RestAirport editAirport(RestAirport airport);
-    List<RestAirport> getAirports();
+    RestAirport updateAirport(RestAirport airport);
+    RestPageResult<RestAirport> getAllAirports(RestPageRequest request);
     void  deleteAirport(String id);
     RestAirport findAirportById(String id);
 

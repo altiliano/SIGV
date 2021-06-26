@@ -1,79 +1,119 @@
 package lst.sigv.pt.service.impl;
 
-import lst.sigv.pt.model.AirportEntity;
+import lst.sigv.pt.exception.AirportAlreadyExistException;
 import lst.sigv.pt.model.api.RestAirport;
+import lst.sigv.pt.model.api.RestPageRequest;
+import lst.sigv.pt.model.api.RestPageResult;
 import lst.sigv.pt.repository.AirportRepository;
 import lst.sigv.pt.service.AirportService;
-import lst.sigv.pt.service.mapper.AirportMapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.any;
 
 /**
  * Created by Afonseca on 12/02/21
  */
+@SpringBootTest
+@TestPropertySource(locations="classpath:application.properties")
 class AirportServiceImplTest {
-    @Mock
-    AirportMapper airportMapper;
-    @Mock
-    AirportRepository airportRepository;
-    @Mock
+
+    @Autowired
     AirportService airportService;
 
-    RestAirport restAirport;
-    AirportEntity airportEntity;
+    @Autowired
+    AirportRepository airportRepository;
+
 
     @BeforeEach
     void setUp() {
-
         MockitoAnnotations.openMocks(this);
-        restAirport = new RestAirport();
-        restAirport.setCity("Lisbon");
-        restAirport.setIataCode("LP");
-        restAirport.setId("1");
-        restAirport.setCountry("Portugal");
+    }
 
-        airportEntity = new AirportEntity();
-        airportEntity.setCity("Lisbon");
-        airportEntity.setIataCode("LP");
-        airportEntity.setId(1);
-        airportEntity.setCountry("Portugal");
+    @Test
+    public void addAirport() {
+        RestAirport restAirport  = RestAirport.builder()
+                .country("Portugal")
+                .iataCode("LPFR")
+                .icaoCode("LPFR")
+                .latitude("1111")
+                .longitude("2222")
+                .name("Humberto Delgado")
+                .city("Faro").build();
+        RestAirport savedAirport = airportService.addAirport(restAirport);
+        Assertions.assertNotNull(savedAirport.getCity());
+        Assertions.assertNotNull(savedAirport.getCountry());
+        Assertions.assertNotNull(savedAirport.getIataCode());
+        Assertions.assertNotNull(savedAirport.getId());
+        Assertions.assertNotNull(savedAirport.getName());
+        Assertions.assertNotNull(savedAirport.getLatitude());
+        Assertions.assertNotNull(savedAirport.getLongitude());
 
+        Assertions.assertEquals(restAirport.getName(), savedAirport.getName());
+        Assertions.assertEquals(restAirport.getCity(), savedAirport.getCity());
+        Assertions.assertEquals(restAirport.getCountry(), savedAirport.getCountry());
+        Assertions.assertEquals(restAirport.getLatitude(), savedAirport.getLatitude());
+        Assertions.assertEquals(restAirport.getLongitude(), savedAirport.getLongitude());
+    }
+
+    @Test
+   public  void editAirport() {
+        RestAirport restAirport = airportService.findAirportById("2");
+
+        Assertions.assertNotNull(restAirport.getCity());
+        Assertions.assertNotNull(restAirport.getCountry());
+        Assertions.assertNotNull(restAirport.getIataCode());
+        Assertions.assertNotNull(restAirport.getId());
+        Assertions.assertNotNull(restAirport.getName());
+        Assertions.assertNotNull(restAirport.getLatitude());
+        Assertions.assertNotNull(restAirport.getLongitude());
+
+        restAirport.setCity("Faro");
+
+        RestAirport editedAirport = airportService.updateAirport(restAirport);
+
+        Assertions.assertNotNull(restAirport.getCity());
+        Assertions.assertNotNull(restAirport.getCountry());
+        Assertions.assertNotNull(restAirport.getIataCode());
+        Assertions.assertNotNull(restAirport.getId());
+        Assertions.assertNotNull(restAirport.getName());
+        Assertions.assertNotNull(restAirport.getLatitude());
+        Assertions.assertNotNull(restAirport.getLongitude());
+        Assertions.assertEquals(restAirport.getCity(), editedAirport.getCity());
 
     }
 
     @Test
-    void saveAirport() {
-        when(airportMapper.restAirportToAirportEntity(restAirport)).thenReturn(airportEntity);
-        when(airportRepository.save(airportEntity)).thenReturn(airportEntity);
-        when(airportService.editAirport(restAirport)).thenReturn(restAirport);
-        RestAirport result = airportService.editAirport(restAirport);
-        Assertions.assertNotNull(result);
-        Assertions.assertEquals(result.getCity(), airportEntity.getCity());
-        Assertions.assertEquals(result.getCountry(), airportEntity.getCountry());
-        Assertions.assertEquals(result.getIcaoCode(), airportEntity.getIcaoCode());
+    public void testAlreadyExistAirport() {
+        RestAirport restAirport = RestAirport.builder()
+                .country("Portugal")
+                .iataCode("LPPT")
+                .icaoCode("LPPT")
+                .latitude("1111")
+                .longitude("2222")
+                .name("Humberto Delgado")
+                .city("lIS").build();
+        try {
+             airportService.addAirport(restAirport);
+        } catch (AirportAlreadyExistException exception) {
+            Assertions.assertNotNull(exception.getMessage());
+        }
     }
+
+
 
     @Test
     void getAirports() {
-        List<AirportEntity> airportEntities = new ArrayList<>();
-        List<RestAirport> restAirports = airportService.getAirports();
-        restAirports.add(restAirport);
-        airportEntities.add(airportEntity);
-        when(airportMapper.restAirportToAirportEntity(restAirport)).thenReturn(airportEntity);
-        when(airportRepository.findAll()).thenReturn(airportEntities);
-        when(airportService.getAirports()).thenReturn(restAirports);
-
-        List<RestAirport> result = airportService.getAirports();
+        RestPageResult<RestAirport> result = airportService.getAllAirports(new RestPageRequest(0, 10));
         Assertions.assertNotNull(result);
-        Assertions.assertEquals(result.size(), 1);
+        Assertions.assertNotNull(result.getContent());
+        Assertions.assertTrue(result.getContent().size() > 0);
+        Assertions.assertEquals(result.getPageSize(), 10);
     }
 
 }

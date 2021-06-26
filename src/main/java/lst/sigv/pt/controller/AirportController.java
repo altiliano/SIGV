@@ -2,10 +2,10 @@ package lst.sigv.pt.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import lst.sigv.pt.model.api.RestAirport;
+import lst.sigv.pt.model.api.RestPageRequest;
+import lst.sigv.pt.model.api.RestPageResult;
 import lst.sigv.pt.service.AirportService;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 /**
  * Created by Afonseca on 13/02/21
@@ -23,8 +23,8 @@ public class AirportController {
 
     @GetMapping("all")
     @ResponseBody
-    public List<RestAirport> getAllAirports() {
-        return airportService.getAirports();
+    public RestPageResult<RestAirport> getAllAirports(@RequestBody RestPageRequest request) {
+        return airportService.getAllAirports(request);
     }
 
     @PostMapping("create")
@@ -36,7 +36,7 @@ public class AirportController {
     @PutMapping("edit")
     @ResponseBody
     public RestAirport editAirport(@RequestBody RestAirport airport) {
-        return airportService.editAirport(airport);
+        return airportService.updateAirport(airport);
     }
 
     @PostMapping("delete/{id}")

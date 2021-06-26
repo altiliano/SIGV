@@ -42,8 +42,11 @@ public class AuthorityManagementServiceImpl implements AuthorityManagementServic
     public void associateAuthority(RestUser user, RestAuthority authority) {
         AuthorityEntity authorityEntity = authorityRepository.findByRole(authority.getRole());
         UserEntity userEntity = userService.findUserByEmail(user.getEmail());
-        userEntity.getAuthorities().add(authorityEntity);
-        userService.saveUser(userEntity);
+        if (userEntity != null) {
+            userEntity.getAuthorities().add(authorityEntity);
+            userService.saveUser(userEntity);
+        }
+
     }
 
     @Override

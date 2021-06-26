@@ -9,6 +9,7 @@ import lst.sigv.pt.model.UserEntity;
 import lst.sigv.pt.model.UserStatus;
 import lst.sigv.pt.model.api.RestAirport;
 import lst.sigv.pt.model.api.RestAuthority;
+import lst.sigv.pt.model.api.RestPageRequest;
 import lst.sigv.pt.model.api.RestUser;
 import lst.sigv.pt.service.*;
 import lst.sigv.pt.service.mapper.PlaneMapper;
@@ -160,11 +161,11 @@ public class DataLoader implements CommandLineRunner {
                 .name("Nelson Mandela")
                 .longitude("-9.13592")
                 .build();
-        if (airportService.getAirports().size() == 0) {
+       // if (airportService.getAirports(new RestPageRequest()).getSize() == 0) {
             airportService.addAirport(lppt);
             airportService.addAirport(lppr);
             airportService.addAirport(gvnp);
-        }
+       // }
 
     }
 }
