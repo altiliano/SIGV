@@ -19,15 +19,15 @@ public class EventEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
+    @Column(name = "name", nullable = false, length = 100)
     private String name;
-
+    @Column(name = "status", nullable = false)
     private EventStatus status;
-
+    @Column(name = "creation_date", nullable = false)
     private Date creationDate;
-
+    @Column(name = "status_date", nullable = false)
     private Date statusDate;
-
     @OneToMany
     @JoinTable(name = "events_legs", joinColumns = @JoinColumn(name = "events_id"), inverseJoinColumns = @JoinColumn(name = "legs_id"))
-    private Set<EventLeg> legs;
+    private Set<RouteEntity> legs;
 }

@@ -13,6 +13,7 @@
     <version>0.0.1-SNAPSHOT</version>
     <name>sigv</name>
     <description>Gestão de Voos da Lusitaniair</description>
+    <packaging>jar</packaging>
 
     <properties>
         <java.version>11</java.version>

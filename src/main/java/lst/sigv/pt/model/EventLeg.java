@@ -17,8 +17,9 @@ public class EventLeg {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private int legNumber;
-    private String depart;
-    private String destination;
+    private AirportEntity depart;
+
+    private AirportEntity destination;
     @ManyToMany( cascade = CascadeType.MERGE)
     @JoinTable(name = "legs_planes", joinColumns = {@JoinColumn(name = "legs_id", referencedColumnName = "id")},
             inverseJoinColumns = {@JoinColumn(name = "plane_id", referencedColumnName = "id")})
