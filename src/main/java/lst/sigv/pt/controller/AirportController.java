@@ -21,9 +21,12 @@ public class AirportController {
         this.airportService = airportService;
     }
 
-    @GetMapping("all")
+    @GetMapping("search")
     @ResponseBody
-    public RestPageResult<RestAirport> getAllAirports(@RequestBody RestPageRequest request) {
+    public RestPageResult<RestAirport> search(@RequestParam("size") String pageSize, @RequestParam("number")  String pageNumber) {
+        RestPageRequest request = new RestPageRequest();
+        request.setPageNumber(Integer.parseInt(pageNumber));
+        request.setPageSize(Integer.parseInt(pageSize));
         return airportService.getAllAirports(request);
     }
 

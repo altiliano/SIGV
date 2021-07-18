@@ -16,6 +16,8 @@ public class RestPageRequest  {
    private  int pageNumber;
    private  int pageSize = 10;
 
+   public  RestPageRequest() {}
+
    public RestPageRequest(int pageNumber, int pageSize) {
       this.pageNumber = pageNumber;
       this.pageSize = pageSize;

@@ -13,6 +13,7 @@ import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.validation.MessageCodesResolver;
 import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
+import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
@@ -43,11 +44,6 @@ public class AppConfig extends WebMvcConfigurationSupport {
         return conversionService;
     }
 
-    @Override
-    protected void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**")
-            .allowedMethods("HEAD", "GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS");
-    }
 
     @Override
     protected Validator getValidator() {

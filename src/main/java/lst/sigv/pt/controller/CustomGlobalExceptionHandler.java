@@ -1,12 +1,9 @@
 package lst.sigv.pt.controller;
 
-import io.jsonwebtoken.ExpiredJwtException;
 import lombok.extern.slf4j.Slf4j;
-import lst.sigv.pt.config.JwtUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -14,11 +11,13 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.ConstraintViolationException;
 import java.io.IOException;
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * Created by Afonseca on 15/11/20
@@ -53,4 +52,6 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
     public void constraintViolationException(HttpServletResponse response) throws IOException {
         response.sendError(HttpStatus.BAD_REQUEST.value());
     }
+
+
 }

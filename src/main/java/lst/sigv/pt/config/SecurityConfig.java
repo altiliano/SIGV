@@ -12,8 +12,13 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.DelegatingPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Configuration
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
@@ -37,7 +42,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/api/**",
+                .antMatchers("/**",
                         "/h2-console/**").permitAll()
                 .anyRequest().authenticated().and().
                 exceptionHandling().and().sessionManagement()
@@ -46,6 +51,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         //this will allow frames with same origin which is much more safe
         http.headers().frameOptions().sameOrigin();
+        //http.headers().defaultsDisabled().cacheControl();
 
     }
 
@@ -59,7 +65,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/webjars/**");
     }
 
-
     @Bean
     public DaoAuthenticationProvider authProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
@@ -67,7 +72,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         authProvider.setPasswordEncoder(passwordEncoder());
         return authProvider;
     }
-
 
     @Bean
     @Override
@@ -77,7 +81,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     PasswordEncoder passwordEncoder() {
-        return SigvPasswordEncodeFactories.createDelegatePasswordEncoder();
+        return createDelegatePasswordEncoder();
+    }
+
+    public static PasswordEncoder createDelegatePasswordEncoder() {
+        String encodingId = "bcrypt10";
+        Map<String, PasswordEncoder> encoders = new HashMap<>();
+        encoders.put(encodingId, new BCryptPasswordEncoder(8));
+        encoders.put("bcrypt", new BCryptPasswordEncoder());
+        return new DelegatingPasswordEncoder(encodingId, encoders);
     }
 
 }

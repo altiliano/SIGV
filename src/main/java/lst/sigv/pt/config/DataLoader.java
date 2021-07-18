@@ -161,11 +161,11 @@ public class DataLoader implements CommandLineRunner {
                 .name("Nelson Mandela")
                 .longitude("-9.13592")
                 .build();
-       // if (airportService.getAirports(new RestPageRequest()).getSize() == 0) {
+        if (airportService.getAllAirports(new RestPageRequest(0, 10)).getNumberOfElements() == 0) {
             airportService.addAirport(lppt);
             airportService.addAirport(lppr);
             airportService.addAirport(gvnp);
-       // }
+        }
 
     }
 }
