@@ -4,15 +4,17 @@ import lombok.extern.slf4j.Slf4j;
 import lst.sigv.pt.exception.AirportAlreadyExistException;
 import lst.sigv.pt.model.AirportEntity;
 import lst.sigv.pt.model.api.RestAirport;
-import lst.sigv.pt.model.api.RestPageResult;
 import lst.sigv.pt.model.api.RestPageRequest;
+import lst.sigv.pt.model.api.RestPageResult;
 import lst.sigv.pt.repository.AirportRepository;
 import lst.sigv.pt.service.AirportService;
 import lst.sigv.pt.service.mapper.AirportMapper;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,9 +50,13 @@ public class AirportServiceImpl implements AirportService {
     @Override
     public RestPageResult<RestAirport> getAllAirports(RestPageRequest request) {
         List<RestAirport> result = new ArrayList<>();
-        Pageable page = PageRequest.of(request.getPageNumber(), request.getPageSize());
-        airportRepository.findAll(page).forEach(airportEntity -> result.add(airportMapper.airportEntityToRestAirport(airportEntity)));
-        return new RestPageResult<>(result, page, result.size());
+        Pageable pageable = PageRequest.of(request.getPageNumber(), request.getPageSize());
+        //airportRepository.findAll(page).forEach(airportEntity -> result.add(airportMapper.airportEntityToRestAirport(airportEntity)));
+        Page<RestAirport> page = airportRepository.findAll(pageable).map(airportMapper::airportEntityToRestAirport);
+        RestPageResult<RestAirport> restPageResult = new RestPageResult<>(page.getContent());
+
+
+        return restPageResult;
     }
 
     @Override

@@ -17,21 +17,9 @@ import java.util.function.Function;
 @Setter
 @Getter
 public class RestPageResult<T> extends PageImpl<T> {
-    private List content;
-    private long total;
-    private int pageNumber;
-    private int pageSize;
 
-    public RestPageResult(List content, Pageable pageable, long total) {
-        super(content, pageable, total);
-        this.total = total;
-        this.content = content;
-        this.pageSize = pageable.getPageSize();
-        this.pageNumber = pageable.getPageNumber();
+
+    public RestPageResult(List<T> content) {
+        super(content);
     }
-
-
-
-
-
 }

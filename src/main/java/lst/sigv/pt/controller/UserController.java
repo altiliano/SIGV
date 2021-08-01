@@ -113,6 +113,7 @@ public class UserController {
     @ResponseBody
     public RestUser getUserDetail() throws UsernameNotFoundException {
         UserDetails userDetails = getAuthenticateUser();
+        assert userDetails != null;
         return userMapper.userEntityToRestUser(userService.findUserByUsername(userDetails.getUsername()));
     }
 

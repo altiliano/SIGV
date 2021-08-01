@@ -32,7 +32,7 @@ class RouteMapperImplTest {
     void routeEntityToRestRoute() {
         RouteEntity routeEntity = getRouteEntity();
         RestRoute restRoute = routeMapper.routeEntityToRestRoute(routeEntity);
-        Assertions.assertEquals(restRoute.getDepart(), routeEntity.getDepart());
+        Assertions.assertEquals(restRoute.getDepart().getIcaoCode(), routeEntity.getDepart().getIcaoCode());
         Assertions.assertEquals(restRoute.getDestinations().size(), routeEntity.getDestinations().size());
         Assertions.assertEquals(restRoute.getId(), routeEntity.getId());
         Assertions.assertEquals(restRoute.getPlanes().size(), routeEntity.getPlanes().size());
@@ -42,7 +42,7 @@ class RouteMapperImplTest {
     void restRouteToRouteEntity() {
         RestRoute restRoute = getRestRoute();
         RouteEntity routeEntity = routeMapper.restRouteToRouteEntity(restRoute);
-        Assertions.assertEquals(restRoute.getDepart(), routeEntity.getDepart());
+        Assertions.assertEquals(restRoute.getDepart().getIcaoCode(), routeEntity.getDepart().getIcaoCode());
         Assertions.assertEquals(restRoute.getDestinations().size(), routeEntity.getDestinations().size());
         Assertions.assertEquals(restRoute.getId(), routeEntity.getId());
         Assertions.assertEquals(restRoute.getPlanes().size(), routeEntity.getPlanes().size());

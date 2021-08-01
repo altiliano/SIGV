@@ -80,7 +80,7 @@ class UserControllerTest {
     void authenticateUserBadCredential() throws Exception {
         String authenticateUser = "{\n" +
                 "\n" +
-                "    \"username\": \"aa@gmail.com\",\n" +
+                "    \"username\": \"admin@gmail.com\",\n" +
                 "    \"password\": \"aaaaa\"\n" +
                 "}";
         mockMvc.perform(post("/api/user/login")

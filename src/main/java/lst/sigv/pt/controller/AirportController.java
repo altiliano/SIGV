@@ -5,6 +5,10 @@ import lst.sigv.pt.model.api.RestAirport;
 import lst.sigv.pt.model.api.RestPageRequest;
 import lst.sigv.pt.model.api.RestPageResult;
 import lst.sigv.pt.service.AirportService;
+import org.mapstruct.ap.shaded.freemarker.template.utility.StringUtil;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 /**

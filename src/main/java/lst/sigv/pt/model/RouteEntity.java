@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -21,7 +22,7 @@ public class RouteEntity {
     @OneToMany(cascade = CascadeType.MERGE)
     @JoinTable( name = "route_destinations", joinColumns =  { @JoinColumn(name = "route_id", referencedColumnName = "id")},
             inverseJoinColumns = {@JoinColumn( name = "airport_id", referencedColumnName = "id")})
-    private Set<AirportEntity> destinations;
+    private Set<AirportEntity> destinations = new HashSet<>();
     private RouteStatus status;
     @ManyToMany( cascade = CascadeType.MERGE)
     @JoinTable(name = "route_planes", joinColumns = {@JoinColumn(name = "route_id", referencedColumnName = "id")},
