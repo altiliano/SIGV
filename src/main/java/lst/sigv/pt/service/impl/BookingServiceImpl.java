@@ -49,7 +49,7 @@ public class BookingServiceImpl implements BookingService {
         }
         Optional<BookingEntity> booking = bookingRepository.findByUser(userEntity.get());
         if (!booking.isPresent()) {
-            throw new BookingNotFoundException("booking for user with id: " + userId + " not foun");
+            throw new BookingNotFoundException("booking for user with id: " + userId + " not found");
         }
         return bookingMapper.bookingEntityToRestBooking(booking.get());
     }
