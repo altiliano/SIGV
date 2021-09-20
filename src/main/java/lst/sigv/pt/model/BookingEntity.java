@@ -12,7 +12,7 @@ import java.sql.Date;
 @Getter
 @Setter
 @Entity(name = "bookings")
-public class BookingEntity {
+public class BookingEntity extends BaseBooking {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -22,6 +22,9 @@ public class BookingEntity {
     @ManyToOne
     @JoinColumn(name = "plane_id")
     private PlaneEntity plane;
+    @Column(name = "create_date")
     private Date createdDate;
+    @Column(name = "status_date")
     private Date statusDate;
+
 }

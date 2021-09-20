@@ -50,6 +50,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/api/user/login",
                         "/api/user/register",
+                        "/api/user/active/**",
                         "/h2-console/**").permitAll()
                 .anyRequest().authenticated().and().
                 exceptionHandling().and().sessionManagement()
@@ -57,7 +58,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
         //this will allow frames with same origin which is much more safe
         http.headers().frameOptions().sameOrigin();
-        //http.headers().defaultsDisabled().cacheControl();
 
     }
 

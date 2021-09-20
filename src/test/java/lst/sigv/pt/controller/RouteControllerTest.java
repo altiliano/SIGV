@@ -6,6 +6,7 @@ import lst.sigv.pt.model.api.RestAirport;
 import lst.sigv.pt.model.api.RestPlane;
 import lst.sigv.pt.model.api.RestRoute;
 import lst.sigv.pt.model.api.RestRouteForm;
+import lst.sigv.pt.service.BookingService;
 import lst.sigv.pt.service.RouteService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -40,6 +41,8 @@ class RouteControllerTest {
 
     @Mock
     private  RouteService routeService;
+    @Mock
+    private BookingService bookingService;
 
     private MockMvc mockMvc;
 
@@ -90,6 +93,9 @@ class RouteControllerTest {
     @Test
     void createRoute() throws Exception {
         RestRoute restRoute = getRoute();
+        if (bookingService != null) {
+
+        }
         Mockito.when(controller.createRoute(any(RestRouteForm.class))).thenReturn(restRoute);
         mockMvc.perform(post("/api/route/create")
                 .content(routeForm)
