@@ -7,6 +7,7 @@ package lst.sigv.pt.service.impl;
 import lst.sigv.pt.exception.BookingNotFoundException;
 import lst.sigv.pt.exception.UserNotFoundException;
 import lst.sigv.pt.model.BookingEntity;
+import lst.sigv.pt.model.BookingStatus;
 import lst.sigv.pt.model.UserEntity;
 import lst.sigv.pt.model.api.RestBooking;
 import lst.sigv.pt.repository.BookingRepository;
@@ -15,6 +16,7 @@ import lst.sigv.pt.service.BookingService;
 import lst.sigv.pt.service.mapper.BookingMapper;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.Optional;
 
 @Service
@@ -32,7 +34,14 @@ public class BookingServiceImpl implements BookingService {
 
 
     @Override
-    public RestBooking createBooking(RestBooking booking) {
+    public RestBooking createBooking(RestBooking booking) throws Exception {
+        if (booking == null) {
+            throw new Exception("Invalid request the booking is null");
+        }
+        String userId = booking.getUser().getId().toString();
+        if (isInvalidUserId(userId)) {
+            throw new UserNotFoundException("user with id" + userId + " not found ");
+        }
         BookingEntity bookingEntity = bookingMapper.restBookingToBookingEntity(booking);
         BookingEntity newBooking = bookingRepository.save(bookingEntity);
         return bookingMapper.bookingEntityToRestBooking(newBooking);
@@ -40,17 +49,54 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public RestBooking getBookingByUserId(String userId) throws UserNotFoundException, BookingNotFoundException {
-        if (userId == null || userId.isEmpty()) {
-            throw new UserNotFoundException("user with id " + userId + " not found");
+
+        if (isInvalidUserId(userId)) {
+            throw new UserNotFoundException("user with id" + userId + " not found ");
         }
-        Optional<UserEntity> userEntity = userRepository.findById(Long.parseLong(userId));
-        if (!userEntity.isPresent()) {
-            throw new UserNotFoundException("user with id " + userId + " not found");
-        }
-        Optional<BookingEntity> booking = bookingRepository.findByUser(userEntity.get());
+
+        UserEntity userEntity = getUserById(userId);
+
+        Optional<BookingEntity> booking = bookingRepository.findByUser(userEntity);
         if (!booking.isPresent()) {
             throw new BookingNotFoundException("booking for user with id: " + userId + " not found");
         }
         return bookingMapper.bookingEntityToRestBooking(booking.get());
+    }
+
+    @Override
+    @Transactional
+    public void cancelBooking(String userId, String bookingId) throws Exception {
+        if (isInvalidUserId(userId)) {
+            throw new UserNotFoundException("user with id: " + userId + " not found");
+        }
+        if (isInvalidBookingId(bookingId)) {
+            throw new BookingNotFoundException("booking with id: " + bookingId + " not found");
+        }
+        long bookId = Long.parseLong(bookingId);
+
+        Optional<BookingEntity> booking = bookingRepository.findById(bookId);
+        if (booking.isPresent()) {
+            UserEntity user = booking.get().getUser();
+            if (!user.getId().equals(Long.parseLong(userId))) {
+                throw new Exception("Invalid operation user id: " + userId + " is not equals user id " + user.getId());
+            }
+            booking.get().setStatus(BookingStatus.CANCELED);
+            bookingRepository.save(booking.get());
+        } else {
+            throw new BookingNotFoundException("booking with id: " + bookingId + " not found");
+        }
+
+    }
+
+    private boolean isInvalidUserId(String userId) {
+        return userId == null || userId.isEmpty();
+    }
+
+    private boolean isInvalidBookingId(String bookingId) {
+        return bookingId == null || bookingId.isEmpty();
+    }
+
+    private UserEntity getUserById(String userId) throws UserNotFoundException {
+        return userRepository.findById(Long.parseLong(userId)).orElseThrow(() -> new UserNotFoundException("user with id" + userId + " not found "));
     }
 }

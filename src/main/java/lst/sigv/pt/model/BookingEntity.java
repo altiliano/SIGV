@@ -2,6 +2,7 @@ package lst.sigv.pt.model;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.context.annotation.Lazy;
 
 import javax.persistence.*;
 import java.sql.Date;
@@ -16,6 +17,7 @@ public class BookingEntity extends BaseBooking {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+
     @OneToOne( mappedBy = "booking")
     private UserEntity user;
     private BookingStatus status;

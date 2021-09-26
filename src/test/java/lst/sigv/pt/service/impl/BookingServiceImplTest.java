@@ -15,6 +15,7 @@ import lst.sigv.pt.repository.UserRepository;
 import lst.sigv.pt.service.mapper.BookingMapperImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -33,6 +34,7 @@ import static org.mockito.Mockito.when;
  */
 
 @ExtendWith(MockitoExtension.class)
+@DisplayName("Test booking service")
 public class BookingServiceImplTest {
 
     BookingServiceImpl bookingService;
@@ -53,10 +55,11 @@ public class BookingServiceImplTest {
     }
 
     @Test
-    void creteBooking() {
-
-        when(bookingService.createBooking(any(RestBooking.class))).thenReturn(getBooking());
-        RestBooking createdBook = bookingService.createBooking(new RestBooking());
+    @DisplayName("Test create booking successfully")
+    void creteBooking() throws Exception {
+        RestBooking bookingRequest = getBooking();
+        when(bookingService.createBooking(bookingRequest)).thenReturn(getBooking());
+        RestBooking createdBook = bookingService.createBooking(getBooking());
 
         Assertions.assertNotNull(createdBook);
         Assertions.assertNotNull(createdBook.getAircraft());
@@ -70,6 +73,7 @@ public class BookingServiceImplTest {
     }
 
     @Test
+    @DisplayName("Test try to get booking with invalid user id and booking id")
     void getBookingByUserIdWithError() {
         when(userRepository.findById(Long.parseLong("1"))).thenReturn(Optional.empty());
         when(userRepository.findById(Long.parseLong("2"))).thenReturn(Optional.of(new UserEntity()));
@@ -80,6 +84,41 @@ public class BookingServiceImplTest {
         Assertions.assertThrows(BookingNotFoundException.class, () -> bookingService.getBookingByUserId("2"));
     }
 
+    @Test
+    @DisplayName("Test create booking with null request")
+    void getBookingWithNull() {
+        Assertions.assertThrows(Exception.class, () -> bookingService.createBooking(null));
+    }
+
+    @Test
+    @DisplayName("Test cancel booking successfully")
+    void cancelBooking() throws Exception {
+        UserEntity user = new UserEntity();
+        user.setId(1L);
+        BookingEntity bookingEntity = new BookingEntity();
+        bookingEntity.setUser(user);
+
+        when(bookingRepository.findById(any())).thenReturn(Optional.of(bookingEntity));
+        bookingService.cancelBooking("1", "1");
+        Assertions.assertTrue(true);
+    }
+
+    @Test
+    @DisplayName("Test cancel booking with wrong user id")
+    void cancelBookingWithWrongUserId()  {
+
+        Assertions.assertThrows(BookingNotFoundException.class, () -> bookingService.cancelBooking("2", ""));
+
+    }
+    @Test
+    @DisplayName("Test cancel booking with wrong user id and booking id")
+    void cancelBookingWithWrongRequest() {
+        Assertions.assertThrows(UserNotFoundException.class, () -> bookingService.cancelBooking("", ""));
+        Assertions.assertThrows(UserNotFoundException.class, () -> bookingService.cancelBooking("","2"));
+        Assertions.assertThrows(BookingNotFoundException.class, () -> bookingService.cancelBooking("1",""));
+        Assertions.assertThrows(UserNotFoundException.class, () -> bookingService.cancelBooking(null,"2"));
+
+    }
 
 
 
@@ -95,6 +134,7 @@ public class BookingServiceImplTest {
         long timeStampMillis = instant.toEpochMilli();
         restBooking.setStatusDate(new Date(timeStampMillis));
         restBooking.setCreatedDate(new Date(timeStampMillis));
+        restBooking.getUser().setId(1L);
         return restBooking;
     }
 
