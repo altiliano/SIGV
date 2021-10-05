@@ -67,6 +67,8 @@ public class PlaneServiceImpl implements PlaneService {
         return currentStatus.equals(newStatus);
     }
 
+
+    //TODO fix this
     @Override
     public List<PlaneEntity> getAllActivePlane() {
         List<PlaneEntity> planes = new ArrayList<>();
