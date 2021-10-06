@@ -29,6 +29,7 @@ public class RouteServiceImpl implements RouteService {
     @Override
     public RestRoute createRoute(RestRouteForm form) {
         RestRoute route = routeMapper.restRouteFormToRestRoute(form);
+        route.setStatus(RouteStatus.INACTIVE);
         return saveRoute(routeMapper.restRouteToRouteEntity(route));
     }
 
@@ -69,9 +70,9 @@ public class RouteServiceImpl implements RouteService {
     }
 
     @Override
-    public List<RestRoute> getAllActiveRoute() {
+    public List<RestRoute> getAllActiveRoute(String currentPositionIcaoCode) {
         List<RestRoute> routes = new ArrayList<>();
-        routeRepository.findAllByStatus(RouteStatus.ACTIVE).forEach(routeEntity -> routes.add(routeMapper.routeEntityToRestRoute(routeEntity)));
+        routeRepository.findAllByStatusAndDepart_IcaoCode(RouteStatus.ACTIVE, currentPositionIcaoCode).forEach(routeEntity -> routes.add(routeMapper.routeEntityToRestRoute(routeEntity)));
         return routes;
     }
 

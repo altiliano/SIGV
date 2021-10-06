@@ -15,6 +15,9 @@ public interface AirportService {
     RestAirport updateAirport(RestAirport airport);
     RestPageResult<RestAirport> getAllAirports(RestPageRequest request);
     void  deleteAirport(String id);
+
+    RestAirport findAirportByIcaoCode(String icaoCode);
+
     RestAirport findAirportById(String id);
 
 

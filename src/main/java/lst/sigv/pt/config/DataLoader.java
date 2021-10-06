@@ -3,14 +3,8 @@ package lst.sigv.pt.config;
 import lombok.extern.slf4j.Slf4j;
 import lst.sigv.pt.exception.PlaneAlreadyExistException;
 import lst.sigv.pt.exception.UserNotFoundException;
-import lst.sigv.pt.model.PlaneEntity;
-import lst.sigv.pt.model.PlaneStatus;
-import lst.sigv.pt.model.UserEntity;
-import lst.sigv.pt.model.UserStatus;
-import lst.sigv.pt.model.api.RestAirport;
-import lst.sigv.pt.model.api.RestAuthority;
-import lst.sigv.pt.model.api.RestPageRequest;
-import lst.sigv.pt.model.api.RestUser;
+import lst.sigv.pt.model.*;
+import lst.sigv.pt.model.api.*;
 import lst.sigv.pt.service.*;
 import lst.sigv.pt.service.mapper.PlaneMapper;
 import lst.sigv.pt.service.mapper.UserMapper;
@@ -20,6 +14,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by Afonseca on 23/01/21
@@ -53,7 +48,7 @@ public class DataLoader implements CommandLineRunner {
         createUser();
         createAirports();
         createPlane();
-        //createRoute();
+        createRoute();
 
     }
 
@@ -117,22 +112,23 @@ public class DataLoader implements CommandLineRunner {
         }
     }
 
- /*   private void createRoute() {
-        Iterable<PlaneEntity> planeEntities = planeService.getAllActivePlane();
-        RestRoute route = new RestRoute();
+    private void createRoute() {
+        List<PlaneEntity> planeEntities = planeService.getAllActivePlane();
+        List<RestPlane> planes = planeMapper.planeEntityToRestPlane(planeEntities);
 
-        route.setDepart("LPPT");
-        route.setDestination("GVNP");
-        route.setStatus(RouteStatus.ACTIVE);
-        for (PlaneEntity plane : planeEntities) {
-            if (route.getPlanes() == null){
-                route.setPlanes(new HashSet<>());
-            }
-            route.getPlanes().add(planeMapper.planeEntityToRestPlane(plane));
-        }
-        routeService.createRoute(route);
+        RestAirport gvnp = airportService.findAirportByIcaoCode("GVNP");
+        RestAirport lppt = airportService.findAirportByIcaoCode("LPPT");
+        RestAirport lppr = airportService.findAirportByIcaoCode("LPPR");
+        RestRouteForm restRouteForm = new RestRouteForm();
+        List<RestAirport> destinations = new ArrayList<>();
+
+        destinations.add(lppt);
+        destinations.add(lppr);
+        restRouteForm.setDepart(gvnp);
+        restRouteForm.setDestination(destinations);
+        routeService.createRoute(restRouteForm);
         log.info("------------------------------------------------Saving route ------------------------------------------------------");
-    }*/
+    }
 
     private void createAirports() {
         RestAirport lppt = RestAirport.builder().city("Lisbon")
