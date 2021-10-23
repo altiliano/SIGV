@@ -1,5 +1,10 @@
 package lst.sigv.pt.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.fge.jsonpatch.JsonPatch;
+import com.github.fge.jsonpatch.JsonPatchException;
 import javassist.tools.web.BadHttpRequest;
 import lombok.extern.slf4j.Slf4j;
 import lst.sigv.pt.config.JwtUtils;
@@ -173,6 +178,22 @@ public class UserController {
         return ResponseEntity.ok().body(jwtUtils.generateToken(userDetails));
     }
 
+    @PatchMapping(path ="/edit-account/{id}" , consumes = "application/json-patch+json")
+    public ResponseEntity<RestUser> editProfile(@RequestBody JsonPatch patch, @PathVariable("id") String userId) throws JsonPatchException, JsonProcessingException {
+        Long id = Long.valueOf(userId);
+        RestUser existentUser = userMapper.userEntityToRestUser(userService.findUserById(id));
+        if (existentUser == null) {
+            throw new UserNotFoundException("user with id: " + userId + " not found");
+        }
+
+        RestUser updatedUser = applyPatchToUser(patch, existentUser);
+        UserEntity userEntity = userMapper.restUserToUserEntity(updatedUser);
+        UserEntity user = userService.saveUser(userEntity);
+        RestUser restUser = userMapper.userEntityToRestUser(user);
+
+        return ResponseEntity.ok(restUser);
+    }
+
 
     private Set<RestAuthority> convertAuthoritiesToRestAuthorities(Collection<? extends GrantedAuthority> grantedAuthorities) {
         if (grantedAuthorities != null && grantedAuthorities.size() > 0) {
@@ -193,6 +214,12 @@ public class UserController {
            log.error(classCastException.getMessage());
        }
         return null;
+    }
+
+    private RestUser applyPatchToUser(JsonPatch patch, RestUser target) throws JsonPatchException, JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode patched = patch.apply(objectMapper.convertValue(target, JsonNode.class));
+        return objectMapper.treeToValue(patched, RestUser.class);
     }
 
 }

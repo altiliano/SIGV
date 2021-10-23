@@ -12,6 +12,8 @@ public interface UserService {
 
     UserEntity findUserByEmail(String email);
 
+    UserEntity findUserById(Long userId);
+
     void activeUser(String email);
 
     UserEntity createUser(UserEntity userEntity);
