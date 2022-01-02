@@ -14,7 +14,7 @@ public interface RouteService {
     RestRoute activeRoute(String routeId);
     RestRoute inactiveRoute(String routeId);
     List<RestRoute> getAllAvailableRoute();
-    List<RestRoute> getAllActiveRoute();
+    List<RestRoute> getAllActiveRoute(String currentPositionIcaoCode);
     void deleteRoute(String routeId);
     RestRoute findRouteById(String routeId);
 }

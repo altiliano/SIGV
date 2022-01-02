@@ -6,6 +6,8 @@ import lst.sigv.pt.model.api.RestPlaneForm;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
+import java.util.List;
+
 /**
  * Created by Afonseca on 18/11/20
  */
@@ -20,4 +22,5 @@ public interface PlaneMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "bookings", ignore = true)
     PlaneEntity restPlaneFormToPlaneEntity(RestPlaneForm planeForm);
+    List<RestPlane> planeEntityToRestPlane (List<PlaneEntity> planes);
 }

@@ -65,6 +65,11 @@ public class AirportServiceImpl implements AirportService {
     }
 
     @Override
+    public RestAirport findAirportByIcaoCode(String icaoCode) {
+        return airportMapper.airportEntityToRestAirport(airportRepository.findByIcaoCode(icaoCode));
+    }
+
+    @Override
     public RestAirport findAirportById(String id) {
         return airportMapper.airportEntityToRestAirport(airportRepository.findAirportEntityById(Long.parseLong(id)));
     }

@@ -2,6 +2,8 @@ package lst.sigv.pt.repository;
 
 import lst.sigv.pt.model.PlaneEntity;
 import lst.sigv.pt.model.PlaneStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
@@ -11,5 +13,5 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 public interface PlaneRepository extends PagingAndSortingRepository<PlaneEntity, Long> {
     boolean existsByRegistration(String registration);
 
-    Iterable<PlaneEntity> findAllByStatus(PlaneStatus status);
+    Page<PlaneEntity> findAllByStatus(PlaneStatus status, Pageable pageable);
 }

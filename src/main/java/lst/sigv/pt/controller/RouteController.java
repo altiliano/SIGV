@@ -36,9 +36,9 @@ public class RouteController {
        return routeService.updateRoute(route);
     }
 
-    @GetMapping("getAllActive")
-    public List<RestRoute> getAllActiveRoute()  {
-        return routeService.getAllActiveRoute();
+    @GetMapping("getAllActive/{currentPosition}")
+    public List<RestRoute> getAllActiveRoute(@PathVariable ("currentPosition") String currentPosition)  {
+        return routeService.getAllActiveRoute(currentPosition);
     }
 
     @PostMapping("delete/{routeId}")
