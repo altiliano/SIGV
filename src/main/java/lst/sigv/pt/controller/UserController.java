@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jsonpatch.JsonPatch;
 import com.github.fge.jsonpatch.JsonPatchException;
-import javassist.tools.web.BadHttpRequest;
 import lombok.extern.slf4j.Slf4j;
 import lst.sigv.pt.config.JwtUtils;
 import lst.sigv.pt.exception.UserNotFoundException;
@@ -14,6 +13,7 @@ import lst.sigv.pt.model.api.*;
 import lst.sigv.pt.notification.NotificationNewUserData;
 import lst.sigv.pt.notification.service.EmailService;
 import lst.sigv.pt.service.AuthenticationFacade;
+import lst.sigv.pt.service.FileStoreService;
 import lst.sigv.pt.service.UserService;
 import lst.sigv.pt.service.impl.LstUserDetailService;
 import lst.sigv.pt.service.mapper.UserMapper;
@@ -31,8 +31,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.Assert;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.mail.MessagingException;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -55,8 +57,9 @@ public class UserController {
     private final EmailService emailService;
     private final TokenService tokenService;
     private final AuthenticationFacade authenticationFacade;
+    private final FileStoreService fileStoreService;
 
-    public UserController(UserService userService, UserMapper userMapper, PasswordEncoder passwordEncoder, LstUserDetailService userDetailService, AuthenticationManager authenticationManager, JwtUtils jwtUtils, EmailService emailService, TokenService tokenService, AuthenticationFacade authenticationFacade) {
+    public UserController(UserService userService, UserMapper userMapper, PasswordEncoder passwordEncoder, LstUserDetailService userDetailService, AuthenticationManager authenticationManager, JwtUtils jwtUtils, EmailService emailService, TokenService tokenService, AuthenticationFacade authenticationFacade, FileStoreService fileStoreService) {
         this.userService = userService;
         this.userMapper = userMapper;
         this.passwordEncoder = passwordEncoder;
@@ -66,6 +69,7 @@ public class UserController {
         this.emailService = emailService;
         this.tokenService = tokenService;
         this.authenticationFacade = authenticationFacade;
+        this.fileStoreService = fileStoreService;
     }
 
     @PostMapping("/register")
@@ -193,6 +197,20 @@ public class UserController {
 
         return ResponseEntity.ok(restUser);
     }
+
+    @PostMapping(path = "/photo-profile/{id}")
+    public ResponseEntity<RestUser> updatePhotoProfile(@PathVariable("id") String userId, @RequestParam("file") MultipartFile file) throws UserNotFoundException, IOException {
+        Long id = Long.parseLong(userId);
+        if (file == null) {
+            throw new RuntimeException("cannot upload profile photo.Because file is null");
+        }
+        UserEntity user = userService.addPhoto(file, id);
+
+        RestUser restUser = userMapper.userEntityToRestUser(user);
+        restUser.setProfileImage(file.getBytes());
+        return ResponseEntity.ok(restUser);
+    }
+
 
 
     private Set<RestAuthority> convertAuthoritiesToRestAuthorities(Collection<? extends GrantedAuthority> grantedAuthorities) {

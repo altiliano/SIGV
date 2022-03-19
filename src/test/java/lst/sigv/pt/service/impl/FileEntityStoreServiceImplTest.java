@@ -35,11 +35,11 @@ public class FileEntityStoreServiceImplTest {
     public void uploadFile() {
         FileEntity fileEntity = getFile();
         Mockito.when(fileStoreRepository.save(fileEntity)).thenReturn(fileEntity);
-        FileEntity uploadedFileEntity = fileStoreService.upload(fileEntity);
+         fileStoreService.upload(fileEntity);
 
-        Assert.assertEquals(fileEntity.getName(), uploadedFileEntity.getName());
-        Assert.assertEquals(fileEntity.getType(), uploadedFileEntity.getType());
-        Assert.assertArrayEquals(uploadedFileEntity.getContent(), fileEntity.getContent());
+        Assert.assertEquals(fileEntity.getName(), fileEntity.getName());
+        Assert.assertEquals(fileEntity.getType(), fileEntity.getType());
+        Assert.assertArrayEquals(fileEntity.getContent(), fileEntity.getContent());
     }
 
     @Test

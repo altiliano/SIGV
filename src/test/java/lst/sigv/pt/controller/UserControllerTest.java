@@ -1,7 +1,6 @@
 package lst.sigv.pt.controller;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.io.FilenameUtils;
 import org.junit.Ignore;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,19 +9,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.json.JacksonJsonParser;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.context.WebApplicationContext;
+
+import java.io.File;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * Created by Afonseca on 15/11/20
@@ -101,6 +101,22 @@ class UserControllerTest {
         mockMvc.perform(post("/api/user/active/MTYxMTE2ODY3MjcyNzo5ZDQ1M2E1ODdhZDEwODg2NDRlY2MxZTU4ZTU4ODJjZDphQGdtYWlsLmNvbTpkMDdkOGQyZDkxZGFkYTVlZmU4NjljNGRhMmJiYjcxNTUyZmJlZDdkMmE5NjQ3NTk3NjJiZDgzYzQxYzNhMGU5YmI2YTFkNTk0YTk4MDU4NjdjMWJmNDExZDVlMDk2NDMwMTZmNDgwNTA0NzJmNjljMDZkOGU3YjRkNmQxNjU2Ng==")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void uploadProfilePhoto() throws Exception {
+        String userId = "1";
+        File file = new File("src/test/resources/file/file.png");
+        String accessToken = obtainAccessToken();
+        MockMultipartFile mockMultipartFile = new MockMultipartFile("file", file.getName(),
+                FilenameUtils.getExtension(file.getName()), file.getPath().getBytes());
+        MockMultipartFile jsonFile = new MockMultipartFile("json", "", "application/json", "{\"json\": \"someValue\"}".getBytes());
+        mockMvc.perform(multipart("/api/user/photo-profile/1")
+                        .file(mockMultipartFile)
+                        .header("Authorization", "Bearer " + accessToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.email", is("admin@gmail.com")))
+                .andExpect(jsonPath("$.profileImage", notNullValue()));;
     }
 
     @Test

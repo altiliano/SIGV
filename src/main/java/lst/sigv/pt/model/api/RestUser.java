@@ -27,4 +27,5 @@ public class RestUser implements Serializable {
     private Date birthDate;
     private String username;
     private Set<RestAuthority> authorities;
+    private byte[] profileImage;
 }

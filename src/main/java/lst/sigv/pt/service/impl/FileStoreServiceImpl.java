@@ -6,6 +6,8 @@ import lst.sigv.pt.repository.FileStoreRepository;
 import lst.sigv.pt.service.FileStoreService;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
+
 @Service
 @Slf4j
 public class FileStoreServiceImpl  implements FileStoreService {
@@ -16,9 +18,10 @@ public class FileStoreServiceImpl  implements FileStoreService {
         this.fileStoreRepository = fileStoreRepository;
     }
 
+    @Transactional
     @Override
-    public FileEntity upload(FileEntity fileEntity) {
-        return fileStoreRepository.save(fileEntity);
+    public void upload(FileEntity fileEntity) {
+        fileStoreRepository.save(fileEntity);
     }
 
     @Override

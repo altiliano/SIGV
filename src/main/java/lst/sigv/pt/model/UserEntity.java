@@ -43,4 +43,6 @@ public class UserEntity {
     private BookingEntity booking;
 
     private UserStatus status;
+    @Column(name = "profile_photo_id", nullable = true, unique = true)
+    private Long profilePhotoId;
 }

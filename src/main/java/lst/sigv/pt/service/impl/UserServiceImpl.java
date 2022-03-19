@@ -3,11 +3,17 @@ package lst.sigv.pt.service.impl;
 import lst.sigv.pt.exception.InvalidUserStatusException;
 import lst.sigv.pt.exception.UserAlreadyExitException;
 import lst.sigv.pt.exception.UserNotFoundException;
+import lst.sigv.pt.model.FileEntity;
 import lst.sigv.pt.model.UserEntity;
 import lst.sigv.pt.model.UserStatus;
 import lst.sigv.pt.repository.UserRepository;
+import lst.sigv.pt.service.FileStoreService;
 import lst.sigv.pt.service.UserService;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import javax.transaction.Transactional;
+import java.io.IOException;
 
 /**
  * Created by Afonseca on 13/11/20
@@ -15,9 +21,11 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
+    private final FileStoreService fileStoreService;
 
-    public UserServiceImpl(UserRepository userRepository) {
+    public UserServiceImpl(UserRepository userRepository, FileStoreService fileStoreService) {
         this.userRepository = userRepository;
+        this.fileStoreService = fileStoreService;
     }
 
     @Override
@@ -66,4 +74,22 @@ public class UserServiceImpl implements UserService {
        return userRepository.findById(userId).orElse(null);
     }
 
+    @Transactional
+    @Override
+    public UserEntity addPhoto(MultipartFile file, Long userId) throws IOException, UserNotFoundException {
+        UserEntity user = findUserById(userId);
+        if (user == null) {
+            throw new UserNotFoundException("cannot upload profile photo.Because user with id: {} not found" + userId);
+        }
+
+        FileEntity fileEntity = new FileEntity();
+        fileEntity.setName(file.getName());
+        fileEntity.setContent(file.getBytes());
+        fileEntity.setType(file.getContentType());
+
+        fileStoreService.upload(fileEntity);
+
+        user.setProfilePhotoId(fileEntity.getId());
+        return user;
+    }
 }

@@ -5,7 +5,7 @@ import lst.sigv.pt.model.FileEntity;
 
 public interface FileStoreService {
 
-    FileEntity upload(FileEntity fileEntity);
+    void upload(FileEntity fileEntity);
 
     FileEntity getFileById(long id);
 
