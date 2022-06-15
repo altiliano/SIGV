@@ -1,7 +1,7 @@
 version: '3.3'
 services:
   sigv-app:
-    image: 'sigv-spring-boot-postgres:latest'
+    image: 'docker-spring-boot-postgres:latest'
     build:
       context: .
       dockerfile: Dockerfile
