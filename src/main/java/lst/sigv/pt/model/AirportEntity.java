@@ -20,7 +20,8 @@ public class AirportEntity extends BaseAirport {
     private long id;
 
 
-    @OneToMany
-    private Set<RouteEntity> routes = new HashSet<>();
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "route_id")
+    private RouteEntity route;
 
 }

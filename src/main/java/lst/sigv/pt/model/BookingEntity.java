@@ -22,7 +22,7 @@ public class BookingEntity extends BaseBooking {
     private UserEntity user;
     private BookingStatus status;
     @ManyToOne
-    @JoinColumn(name = "plane_id")
+    @JoinColumn(name = "plane_id", nullable = false, updatable = false)
     private PlaneEntity plane;
     @Column(name = "create_date")
     private Date createdDate;

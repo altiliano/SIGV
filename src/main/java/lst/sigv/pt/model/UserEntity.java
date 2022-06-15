@@ -32,14 +32,13 @@ public class UserEntity {
     private String username;
     private String password;
 
+
     @OneToMany( cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
-    @JoinTable(name = "users_authority", joinColumns = {@JoinColumn ( name = "USER_ID", referencedColumnName = "ID")},
-            inverseJoinColumns = {@JoinColumn(name = "AUTHORITY_ID", referencedColumnName = "ID")})
+    @JoinTable(name = "users_authority", joinColumns = {@JoinColumn ( name = "USER_ID", referencedColumnName = "ID")})
     private Set<AuthorityEntity> authorities = new HashSet<>();
 
     @OneToOne( cascade = CascadeType.ALL)
-    @JoinTable( name = "users_booking", joinColumns = {@JoinColumn (name = "USER_ID", referencedColumnName = "ID")},
-            inverseJoinColumns = {@JoinColumn(name = "BOOKING_ID", referencedColumnName = "ID")})
+    @JoinColumn(name = "booking_id", referencedColumnName = "id")
     private BookingEntity booking;
 
     private UserStatus status;

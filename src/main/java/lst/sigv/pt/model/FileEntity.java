@@ -8,7 +8,7 @@ import javax.persistence.Id;
 @Entity(name = "sigv_file")
 public class FileEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private byte[] content;
     private String name;

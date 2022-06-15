@@ -2,6 +2,7 @@ package lst.sigv.pt.model;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.mapstruct.EnumMapping;
 
 import javax.persistence.*;
 import java.util.HashSet;
@@ -18,14 +19,12 @@ public class RouteEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     @OneToOne
+    @JoinColumn( name = "airport_id", referencedColumnName = "id", nullable = false, unique = true, updatable = false)
     private AirportEntity depart;
-    @OneToMany(cascade = CascadeType.MERGE)
-    @JoinTable( name = "route_destinations", joinColumns =  { @JoinColumn(name = "route_id", referencedColumnName = "id")},
-            inverseJoinColumns = {@JoinColumn( name = "airport_id", referencedColumnName = "id")})
+    @OneToMany(cascade = CascadeType.MERGE, fetch = FetchType.LAZY, mappedBy = "route")
     private Set<AirportEntity> destinations = new HashSet<>();
+    @Enumerated(EnumType.STRING)
     private RouteStatus status;
-    @ManyToMany( cascade = CascadeType.MERGE)
-    @JoinTable(name = "route_planes", joinColumns = {@JoinColumn(name = "route_id", referencedColumnName = "id")},
-            inverseJoinColumns = {@JoinColumn(name = "plane_id", referencedColumnName = "id")})
+    @OneToMany( cascade = CascadeType.MERGE, fetch = FetchType.LAZY, mappedBy = "routes")
     private Set<PlaneEntity> planes;
 }

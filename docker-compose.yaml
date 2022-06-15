@@ -4,19 +4,21 @@ services:
     image: 'sigv-spring-boot-postgres:latest'
     build:
       context: .
+      dockerfile: Dockerfile
     container_name: sigv-backend
     ports:
       - "8080:8080"
     depends_on:
       - sigv-db
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/postgres
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://sigv-db:5432/postgres
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=postgres
-      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=validate
+      - SPRING_FLYWAY_ENABLE=true
 
   sigv-db:
-    image: 'postgres'
+    image: 'postgres:13.1-alpine'
     container_name: sigv-db
     ports:
       - "5432:5432"

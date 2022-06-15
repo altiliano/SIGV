@@ -12,10 +12,10 @@ import java.util.Set;
  */
 @Getter
 @Setter
-@Entity(name = "events")
+//@Entity(name = "events")
 public class EventEntity {
 
-    @Id
+   /* @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
@@ -29,5 +29,5 @@ public class EventEntity {
     private Date statusDate;
     @OneToMany
     @JoinTable(name = "events_legs", joinColumns = @JoinColumn(name = "events_id"), inverseJoinColumns = @JoinColumn(name = "legs_id"))
-    private Set<RouteEntity> legs;
+    private Set<RouteEntity> legs;*/
 }

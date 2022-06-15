@@ -47,8 +47,8 @@ public class DataLoader implements CommandLineRunner {
         createAuthority();
         createUser();
         createAirports();
-        createPlane();
-        createRoute();
+        //createPlane();
+       // createRoute();
 
     }
 

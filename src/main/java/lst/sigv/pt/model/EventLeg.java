@@ -11,7 +11,7 @@ import java.util.Set;
  */
 @Getter
 @Setter
-@Entity (name = "legs")
+//@Entity (name = "legs")
 public class EventLeg {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

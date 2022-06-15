@@ -25,6 +25,7 @@ public class PlaneEntity {
     private String aircraftType;
     @OneToMany(mappedBy = "plane")
     private Set<BookingEntity> bookings = new HashSet<>();
-    @ManyToMany(mappedBy = "planes")
-    private Set<RouteEntity> routes = new HashSet<>();
+    @ManyToOne
+    @JoinColumn(name = "route_id")
+    private RouteEntity routes ;
 }
